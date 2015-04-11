@@ -10,13 +10,14 @@
 //--------------------------------------------------------------------------------
 
 module Decoder(
-    	instr_op_i,
+    instr_op_i,
 	RegWrite_o,
 	ALU_op_o,
 	ALUSrc_o,
 	RegDst_o,
 	Branch_o,
 	isOri_o,
+	isBne_o
 );
      
 //I/O ports
@@ -28,6 +29,7 @@ output         ALUSrc_o;
 output         RegDst_o;
 output         Branch_o;
 output		   isOri_o;
+output		   isBne_o;
  
 //Internal Signals
 reg    [3-1:0] ALU_op_o;
@@ -36,6 +38,7 @@ reg            RegWrite_o;
 reg            RegDst_o;
 reg            Branch_o;
 reg 		   isOri_o;
+reg		       isBne_o;
 
 //Parameter
 
@@ -44,6 +47,7 @@ reg 		   isOri_o;
 always @(instr_op_i)
 begin
 	isOri_o = 0;
+	isBne_o = 0;
 	// ALU_op_o ???
 	case(instr_op_i)
 		// R-type
@@ -102,6 +106,7 @@ begin
 			RegWrite_o = 0;
 			Branch_o = 1;
 			ALU_op_o = 3'b101;
+			isBne_o = 1;
 		end
 		// default
 		default: begin

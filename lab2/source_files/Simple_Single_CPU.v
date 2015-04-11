@@ -27,9 +27,11 @@ wire [32-1:0] instr;
 // data
 wire [32-1:0] RSdata;
 wire [32-1:0] RTdata;
-wire [32-1:0] ALUResult;
-wire [16-1:0] immediate;
+wire [32-1:0] immediate;
+wire [32-1:0] immediateSL2;
 wire [32-1:0] ALUIn2;
+wire [32-1:0] ALUResult;
+wire [32-1:0] ALUZero;
 
 // control
 wire RegDst;
@@ -39,6 +41,7 @@ wire Branch;
 wire [3-1:0] ALUOp;
 wire [4-1:0] ALUCtrl;
 wire isOri;
+wire isBne;
 
 // register
 wire [5-1:0] WriteReg;
@@ -91,7 +94,8 @@ Decoder Decoder(
 	.ALUSrc_o(ALUSrc),   
 	.RegDst_o(RegDst),   
 	.Branch_o(Branch),
-        .isOri_o(isOri)
+        .isOri_o(isOri),
+        .isBne_o(isBne)
 );
 
 ALU_Ctrl AC(
@@ -114,29 +118,29 @@ MUX_2to1 #(.size(32)) Mux_ALUSrc(
 );	
 		
 ALU ALU(
-        .src1_i(),
-	.src2_i(),
-	.ctrl_i(),
-	.result_o(),
-	.zero_o()
+        .src1_i(RSdata),
+	.src2_i(ALUIn2),
+	.ctrl_i(ALUCtrl),
+	.result_o(ALUResult),
+	.zero_o(ALUZero)
 );
 
 // PC + immediate
 Adder Adder2(
         .src1_i(pcAdd4),     
-	.src2_i(immediate),
+	.src2_i(immediateSL2),
         .sum_o(pcADDIm)     
 );
-		
+
 Shift_Left_Two_32 Shifter(
-        .data_i(),
-        .data_o()
-        ); 		
+        .data_i(immediate),
+        .data_o(immediateSL2)
+); 		
 		
 MUX_2to1 #(.size(32)) Mux_PC_Source(
         .data0_i(pcAdd4),
         .data1_i(pcADDIm),
-        .select_i(),
+        .select_i(Branch && (isBne && !ALUZero || !isBne && ALUZero) ),
         .data_o(pcNew)
 );	
 
