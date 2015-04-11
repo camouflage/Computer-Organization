@@ -35,14 +35,15 @@ endmodule
 
 /*
 module stimulus;
-
+reg isOri;
 reg[16-1: 0] in;
 wire[32-1: 0] out;
 
-Sign_Extend se(in, out);
+Sign_Extend se(isOri, in, out);
 
 initial
 begin
+	isOri = 0;
 	in = 31;
 	#1 $display("%b %b", in, out);
 	

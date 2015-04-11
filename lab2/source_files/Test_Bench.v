@@ -44,7 +44,7 @@ always@(posedge CLK) begin
 	begin 
 		$display("r0= %d, r1= %d, r2= %d, r3= %d, r4= %d, r5= %d, r6= %d, r7= %d",cpu.RF.Reg_File[0], cpu.RF.Reg_File[1], cpu.RF.Reg_File[2], cpu.RF.Reg_File[3], cpu.RF.Reg_File[4], 
 				  cpu.RF.Reg_File[5], cpu.RF.Reg_File[6], cpu.RF.Reg_File[7]);
-		$display("r8= %d, r=9 %d, r10=%d, r11=%d, r12=%d, r=13%d, r14=%d, r15=%d",cpu.RF.Reg_File[8], cpu.RF.Reg_File[9], cpu.RF.Reg_File[10], cpu.RF.Reg_File[11], cpu.RF.Reg_File[12], 
+		$display("r8= %d, r9= %d, r10=%d, r11=%d, r12=%d, r=13%d, r14=%d, r15=%d",cpu.RF.Reg_File[8], cpu.RF.Reg_File[9], cpu.RF.Reg_File[10], cpu.RF.Reg_File[11], cpu.RF.Reg_File[12], 
 				  cpu.RF.Reg_File[13], cpu.RF.Reg_File[14], cpu.RF.Reg_File[15]);
 		$display("r16=%d, r17=%d, r18=%d, r19=%d, r20=%d, r21=%d, r22=%d, r23=%d",cpu.RF.Reg_File[16], cpu.RF.Reg_File[17], cpu.RF.Reg_File[18], cpu.RF.Reg_File[19], cpu.RF.Reg_File[20], 
 				  cpu.RF.Reg_File[21], cpu.RF.Reg_File[22], cpu.RF.Reg_File[23]);

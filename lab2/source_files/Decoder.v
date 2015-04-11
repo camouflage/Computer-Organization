@@ -100,7 +100,7 @@ begin
 			isOri_o = 1;
 		end
 		// bne
-		6'b001010: begin
+		6'b000101: begin
 			RegDst_o = 0; // don't care
 			ALUSrc_o = 0;
 			RegWrite_o = 0;
