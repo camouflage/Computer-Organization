@@ -31,7 +31,7 @@ wire [32-1:0] immediate;
 wire [32-1:0] immediateSL2;
 wire [32-1:0] ALUIn2;
 wire [32-1:0] ALUResult;
-wire [32-1:0] ALUZero;
+wire          ALUZero;
 
 // control
 wire RegDst;
@@ -118,6 +118,7 @@ MUX_2to1 #(.size(32)) Mux_ALUSrc(
 );	
 		
 ALU ALU(
+        .rst_n(rst_i), // no use?
         .src1_i(RSdata),
 	.src2_i(ALUIn2),
 	.ctrl_i(ALUCtrl),
