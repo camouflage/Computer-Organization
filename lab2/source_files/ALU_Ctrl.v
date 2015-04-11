@@ -12,14 +12,14 @@
 module ALU_Ctrl(
           funct_i,
           ALUOp_i,
-          ALUCtrl_o
-          );
+          ALUCtrl_o,
+);
           
 //I/O ports 
 input      [6-1:0] funct_i;
 input      [3-1:0] ALUOp_i;
 
-output     [4-1:0] ALUCtrl_o;    
+output     [4-1:0] ALUCtrl_o;
      
 //Internal Signals
 reg        [4-1:0] ALUCtrl_o;
@@ -31,6 +31,7 @@ reg        [4-1:0] ALUCtrl_o;
 always @(funct_i or ALUOp_i)
 begin
 	case (ALUOp_i)
+		// R-type
 		3'b010: begin
 			case (funct_i)
 				// add
@@ -57,9 +58,28 @@ begin
 				6'b000110:
 					ALUCtrl_o = 1111;
 			endcase
-
-		3'b001: 
 		end
+		// addi
+		3'b110:
+			ALUCtrl_o =  0010;
+		// slti
+		3'b011:
+			ALUCtrl_o =  0111;
+		// beq (sub)
+		3'b001:
+			ALUCtrl_o =  0110;
+		// lui (sll)
+		3'b100:
+			ALUCtrl_o =  0101;
+		// ori
+		3'b111:
+			ALUCtrl_o =  0001;
+		// bne (sub)
+		3'b101:
+			ALUCtrl_o =  0110;
+		// default
+		default:
+			ALUCtrl_o = 4'bxxxx;
 	endcase
 end
 endmodule     

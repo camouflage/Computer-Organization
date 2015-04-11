@@ -91,7 +91,7 @@ case( ctrl_i )
 
 	// default: set to unknown
 	default:
-		result_o = 'x;
+		result_o = 32'bx;
 
 endcase
 end

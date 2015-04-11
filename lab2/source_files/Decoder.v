@@ -15,8 +15,9 @@ module Decoder(
 	ALU_op_o,
 	ALUSrc_o,
 	RegDst_o,
-	Branch_o
-	);
+	Branch_o,
+	isOri_o,
+);
      
 //I/O ports
 input  [6-1:0] instr_op_i;
@@ -26,6 +27,7 @@ output [3-1:0] ALU_op_o;
 output         ALUSrc_o;
 output         RegDst_o;
 output         Branch_o;
+output		   isOri_o;
  
 //Internal Signals
 reg    [3-1:0] ALU_op_o;
@@ -33,6 +35,7 @@ reg            ALUSrc_o;
 reg            RegWrite_o;
 reg            RegDst_o;
 reg            Branch_o;
+reg 		   isOri_o;
 
 //Parameter
 
@@ -40,6 +43,8 @@ reg            Branch_o;
 //Main function
 always @(instr_op_i)
 begin
+	isOri_o = 0;
+	// ALU_op_o ???
 	case(instr_op_i)
 		// R-type
 		6'b000000: begin
@@ -47,7 +52,7 @@ begin
 			ALUSrc_o = 0;
 			RegWrite_o = 1;
 			Branch_o = 0;
-			ALU_op_o = 3'b010; // ???
+			ALU_op_o = 3'b010;
 		end
 		// addi
 		6'b001000: begin
@@ -55,7 +60,7 @@ begin
 			ALUSrc_o = 1;
 			RegWrite_o = 1;
 			Branch_o = 0;
-			ALU_op_o = 3'b010;
+			ALU_op_o = 3'b110;
 		end
 		// slti
 		6'b001010: begin
@@ -63,7 +68,7 @@ begin
 			ALUSrc_o = 1;
 			RegWrite_o = 1;
 			Branch_o = 0;
-			ALU_op_o = 3'b010;
+			ALU_op_o = 3'b011;
 		end
 		// beq
 		6'b000100: begin
@@ -79,7 +84,7 @@ begin
 			ALUSrc_o = 1;
 			RegWrite_o = 1;
 			Branch_o = 0;
-			ALU_op_o = 3'b010;
+			ALU_op_o = 3'b100;
 		end
 		// ori
 		6'b001101: begin
@@ -87,7 +92,8 @@ begin
 			ALUSrc_o = 1;
 			RegWrite_o = 1;
 			Branch_o = 0;
-			ALU_op_o = 3'b010;
+			ALU_op_o = 3'b111;
+			isOri_o = 1;
 		end
 		// bne
 		6'b001010: begin
@@ -95,8 +101,9 @@ begin
 			ALUSrc_o = 0;
 			RegWrite_o = 0;
 			Branch_o = 1;
-			ALU_op_o = 3'b010;
+			ALU_op_o = 3'b101;
 		end
+		// default
 		default: begin
 			RegDst_o = 1'bx;
 			ALUSrc_o = 1'bx;
@@ -110,9 +117,3 @@ end
 
 endmodule
 
-
-
-
-
-                    
-                    
