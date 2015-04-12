@@ -78,7 +78,11 @@ end
 end
 
 initial  begin
+<<<<<<< HEAD
     $readmemb("CO_P2_test_data2.txt", cpu.IM.Instr_Mem);  //Read instruction from "CO_P2_test_data1.txt"
+=======
+    $readmemb("CO_Lab2_test_bonus_math_formula.txt", cpu.IM.Instr_Mem);  //Read instruction from "CO_P2_test_data1.txt"
+>>>>>>> fd2f5f65ff77fa1e4aff020ae39a6cdb86f2c609
     handle = $fopen("CO_Lab2_Result.txt");
     $dumpfile("test.vcd");
     $dumpvars(0,cpu);
