@@ -58,14 +58,14 @@ ProgramCounter PC(
 
 // PC + 4
 Adder Adder1(
-        .src1_i(pcOld),     
+        .src1_i(pcNew),     
 	.src2_i(32'd4),     
 	.sum_o(pcAdd4)    
 );
 	
 Instr_Memory IM(
-        .pc_addr_i(pcOld),  
-	.instr_o(instr)    
+        .pc_addr_i(pcNew),  
+	.instr_o(instr)
 );
 
 MUX_2to1 #(.size(5)) Mux_Write_Reg(
@@ -122,6 +122,7 @@ ALU ALU(
         .src1_i(RSdata),
 	.src2_i(ALUIn2),
 	.ctrl_i(ALUCtrl),
+        .shamt_i(instr[10:6]),
 	.result_o(ALUResult),
 	.zero_o(ALUZero)
 );
@@ -142,7 +143,7 @@ MUX_2to1 #(.size(32)) Mux_PC_Source(
         .data0_i(pcAdd4),
         .data1_i(pcADDIm),
         .select_i(Branch && (isBne && !ALUZero || !isBne && ALUZero) ),
-        .data_o(pcNew)
+        .data_o(pcOld)
 );	
 
 endmodule

@@ -36,47 +36,48 @@ begin
 			case (funct_i)
 				// add
 				6'b100000:
-					ALUCtrl_o = 0010;
+					ALUCtrl_o = 4'b0010;
 				// sub
 				6'b100010:
-					ALUCtrl_o = 0110;
+					ALUCtrl_o = 4'b0110;
 				// and
 				6'b100100:
-					ALUCtrl_o = 0000;
+					ALUCtrl_o = 4'b0000;
 				// or
 				6'b100101:
-					ALUCtrl_o = 0001;
+					ALUCtrl_o = 4'b0001;
 				// slt
 				6'b101010:
-					ALUCtrl_o = 0111;
+					ALUCtrl_o = 4'b0111;
 
 				// using unused ALU_ctrl
 				// sll
 				6'b000000:
-					ALUCtrl_o = 0101;
+					ALUCtrl_o = 4'b0101;
 				// srlv
 				6'b000110:
-					ALUCtrl_o = 1111;
+					ALUCtrl_o = 4'b1111;
 			endcase
 		end
 		// addi
-		3'b110:
-			ALUCtrl_o =  0010;
+		3'b110: begin
+			ALUCtrl_o =  4'b0010;
+		end
 		// slti
 		3'b011:
-			ALUCtrl_o =  0111;
+			ALUCtrl_o =  4'b0111;
 		// beq (sub)
 		3'b001:
-			ALUCtrl_o =  0110;
-		// lui (sll)
+			ALUCtrl_o =  4'b0110;
+		// lui
 		3'b100:
-			ALUCtrl_o =  0101;
+			ALUCtrl_o =  4'b0100;
 		// ori
 		3'b111:
-			ALUCtrl_o =  0001;
+			ALUCtrl_o =  4'b0001;
 		// bne (sub)
 		3'b101:
-			ALUCtrl_o =  0110;
+			ALUCtrl_o =  4'b0110;
 		// default
 		default:
 			ALUCtrl_o = 4'bxxxx;
