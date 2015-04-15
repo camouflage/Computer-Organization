@@ -64,14 +64,14 @@ begin
 					ALUCtrl_o = 4'b0011;
 			endcase
 		end
-		// addi
+		// addi & lw & sw
 		3'b110: begin
 			ALUCtrl_o =  4'b0010;
 		end
 		// slti
 		3'b011:
 			ALUCtrl_o =  4'b0111;
-		// beq (sub)
+		// beq & bne (sub)
 		3'b001:
 			ALUCtrl_o =  4'b0110;
 		// lui
@@ -80,9 +80,6 @@ begin
 		// ori
 		3'b111:
 			ALUCtrl_o =  4'b0001;
-		// bne (sub)
-		3'b101:
-			ALUCtrl_o =  4'b0110;
 		// default
 		default:
 			ALUCtrl_o = 4'bxxxx;

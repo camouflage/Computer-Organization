@@ -23,7 +23,7 @@ integer     end_count;
 //Greate tested modle  
 Simple_Single_CPU cpu(
         .clk_i(CLK),
-		.rst_i(RST)
+		.rst_n(RST)
 		);
  
 //Main function

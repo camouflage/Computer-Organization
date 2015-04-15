@@ -158,8 +158,8 @@ begin
 			Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
-			MemtoReg_o = 2'b00; // don't care
-			ALU_op_o = 3'b101;
+			MemtoReg_o = 2'b11; // don't care
+			ALU_op_o = 3'b001;
 			//isBne_o = 1;
 		end
 		// lab3
@@ -174,7 +174,7 @@ begin
 			MemRead_o = 1;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b01;
-			ALU_op_o = 3'b101;
+			ALU_op_o = 3'b110;
 		end
 		// sw
 		6'b101011: begin
@@ -187,7 +187,7 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 1;
 			MemtoReg_o = 2'b01; // don't care
-			ALU_op_o = 3'b101;
+			ALU_op_o = 3'b110;
 		end
 		// jump
 		6'b000010: begin
@@ -200,8 +200,9 @@ begin
 			MemRead_o = 0; // don't care
 			MemWrite_o = 0; // don't care
 			MemtoReg_o = 2'b00; // don't care
-			ALU_op_o = 3'b101;
+			ALU_op_o = 3'b010; // don't care
 		end
+		/*
 		// bgt
 		6'b000111: begin
 			RegDst_o = 0; // don't care
@@ -215,7 +216,7 @@ begin
 			MemtoReg_o = 2'b00; // don't care
 			ALU_op_o = 3'b001;
 		end
-
+		*/
 		// default
 		default: begin
 			RegDst_o = 1'bx;

@@ -23,6 +23,7 @@ wire [32-1:0] pcAdd4;
 wire [32-1:0] pcADDIm;
 wire [32-1:0] pcNew;
 wire [32-1:0] instr;
+wire [32-1:0] pcBeforeJump;
 
 // data
 wire [32-1:0] RSdata;
@@ -32,6 +33,9 @@ wire [32-1:0] immediateSL2;
 wire [32-1:0] ALUIn2;
 wire [32-1:0] ALUResult;
 wire          ALUZero;
+wire [32-1:0] ReadData;
+wire [32-1:0] WriteDataMem;
+wire [32-1:0] WriteDataReg;
 
 // control
 wire RegDst;
@@ -42,6 +46,12 @@ wire [3-1:0] ALUOp;
 wire [4-1:0] ALUCtrl;
 wire isOri;
 //wire isBne;
+wire [2-1:0] BranchType;
+wire Jump;
+wire MemRead;
+wire MenWrite;
+wire [2-1:0] MemtoReg;
+wire Branch2;
 
 // register
 wire [5-1:0] WriteReg;
@@ -81,7 +91,7 @@ Reg_File RF(
         .RSaddr_i(instr[25:21]),  
         .RTaddr_i(instr[20:16]),  
         .RDaddr_i(WriteReg),  
-        .RDdata_i(ALUResult), 
+        .RDdata_i(WriteDataReg), 
         .RegWrite_i(RegWrite),
         .RSdata_o(RSdata),  
         .RTdata_o(RTdata)   
@@ -96,6 +106,11 @@ Decoder Decoder(
 	.Branch_o(Branch),
         .isOri_o(isOri),
         //.isBne_o(isBne)
+        .BranchType_o(BranchType),
+        .Jump_o(Jump),
+        .MemRead_o(MemRead),
+        .MemWrite_o(MenWrite),
+        .MemtoReg_o(MemtoReg)
 );
 
 ALU_Ctrl AC(
@@ -143,42 +158,43 @@ MUX_2to1 #(.size(32)) Mux_PC_Source(
         .data0_i(pcAdd4),
         .data1_i(pcADDIm),
         //.select_i(Branch && (isBne && !ALUZero || !isBne && ALUZero) ),
-        .select_i(),
-        .data_o(pcOld)
+        .select_i(Branch && Branch2),
+        .data_o(pcBeforeJump)
 );	
 
 // lab3
 MUX_2to1 #(.size(32)) MUX_Jump (
-        .data0_i(),
-        .data1_i(),
-        .select_i(),
-        .data_o()
+        .data0_i(pcBeforeJump),
+        .data1_i({pcAdd4[31:28], instr[25:0], 2'b00}), // cancatenation
+        .select_i(Jump),
+        .data_o(pcOld)
 );
 
 MUX_4to1 #(.size(1)) MUX_BranchType (
-        .data0_i(),
-        .data1_i(),
-        .data2_i(),
-        .data3_i(),
-        .select_i(),
-        .data_o()
+        .data0_i(ALUZero),
+        .data1_i(!(ALUZero || ALUResult)), // ???
+        .data2_i(!ALUResult),
+        .data3_i(!ALUZero),
+        .select_i(BranchType),
+        .data_o(Branch2)
 );
 
 MUX_4to1 #(.size(32)) MUX_MemToReg (
-        .data0_i(),
-        .data1_i(),
-        .data2_i(),
-        .select_i(),
-        .data_o()
+        .data0_i(ALUResult),
+        .data1_i(ReadData),
+        .data2_i(immediate),
+        .data3_i(),
+        .select_i(MemtoReg),
+        .data_o(WriteDataReg)
 );
 
 Data_Memory DM (
-        .clk_i(),
-        .addr_i(),
-        .data_i(),
-        .MemRead_i(),
-        .MemWrite_i(),
-        .data_o()
+        .clk_i(clk_i),
+        .addr_i(ALUResult),
+        .data_i(RTdata),
+        .MemRead_i(MemRead),
+        .MemWrite_i(MenWrite),
+        .data_o(ReadData)
 );
 
 endmodule
