@@ -36,6 +36,8 @@ wire          ALUZero;
 wire [32-1:0] ReadData;
 wire [32-1:0] WriteDataMem;
 wire [32-1:0] WriteDataReg;
+// extra
+
 
 // control
 wire RegDst;
@@ -46,12 +48,15 @@ wire [3-1:0] ALUOp;
 wire [4-1:0] ALUCtrl;
 wire isOri;
 //wire isBne;
+// lab3
 wire [2-1:0] BranchType;
 wire Jump;
 wire MemRead;
 wire MenWrite;
 wire [2-1:0] MemtoReg;
 wire Branch2;
+// extra
+wire ReadDataReg;
 
 // register
 wire [5-1:0] WriteReg;
@@ -119,14 +124,14 @@ ALU_Ctrl AC(
         .ALUCtrl_o(ALUCtrl) 
 );
 	
-Sign_Extend SE(
+Sign_Extend #(.size(16)) SE(
         .isOri_i(isOri), // ori: zero-extend.
         .data_i(instr[15:0]),
         .data_o(immediate)
 );
 
 MUX_2to1 #(.size(32)) Mux_ALUSrc(
-        .data0_i(RTdata),
+        .data0_i(ReadData2),
         .data1_i(immediate),
         .select_i(ALUSrc),
         .data_o(ALUIn2)
@@ -195,6 +200,20 @@ Data_Memory DM (
         .MemRead_i(MemRead),
         .MemWrite_i(MenWrite),
         .data_o(ReadData)
+);
+
+// sign-extend for RTimmediate in instruction bnez & bgez
+Sign_Extend #(.size(5)) SERTimm (
+        .isOri_i(0), // ori: zero-extend.
+        .data_i(instr[20:16]),
+        .data_o(RTimmediate)
+);
+
+MUX_2to1 #(.size(32)) MUX_ReadData2 (
+        .data0_i(RTimmediate),
+        .data1_i(RTdata),
+        .select(ReadDataReg),
+        .data_o(ALUIn2)
 );
 
 endmodule
