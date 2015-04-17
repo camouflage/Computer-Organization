@@ -36,8 +36,10 @@ wire          ALUZero;
 wire [32-1:0] ReadData;
 wire [32-1:0] WriteDataMem;
 wire [32-1:0] WriteDataReg;
-// extra
 
+// extra
+wire [32-1:0] ReadData2;
+wire [32-1:0] RTimmediate;
 
 // control
 wire RegDst;
@@ -115,7 +117,8 @@ Decoder Decoder(
         .Jump_o(Jump),
         .MemRead_o(MemRead),
         .MemWrite_o(MenWrite),
-        .MemtoReg_o(MemtoReg)
+        .MemtoReg_o(MemtoReg),
+        .ReadDataReg_o(ReadDataReg)
 );
 
 ALU_Ctrl AC(
@@ -177,7 +180,7 @@ MUX_2to1 #(.size(32)) MUX_Jump (
 
 MUX_4to1 #(.size(1)) MUX_BranchType (
         .data0_i(ALUZero),
-        .data1_i(!(ALUZero || ALUResult)), // ???
+        .data1_i(!(ALUZero || ALUResult)),
         .data2_i(!ALUResult),
         .data3_i(!ALUZero),
         .select_i(BranchType),
@@ -196,15 +199,15 @@ MUX_4to1 #(.size(32)) MUX_MemToReg (
 Data_Memory DM (
         .clk_i(clk_i),
         .addr_i(ALUResult),
-        .data_i(RTdata),
+        .data_i(ReadData2),
         .MemRead_i(MemRead),
         .MemWrite_i(MenWrite),
         .data_o(ReadData)
 );
 
 // sign-extend for RTimmediate in instruction bnez & bgez
-Sign_Extend #(.size(5)) SERTimm (
-        .isOri_i(0), // ori: zero-extend.
+Sign_Extend #(.size(5)) SE_RTimm (
+        .isOri_i(1'b0), // ori: zero-extend.
         .data_i(instr[20:16]),
         .data_o(RTimmediate)
 );
@@ -212,8 +215,8 @@ Sign_Extend #(.size(5)) SERTimm (
 MUX_2to1 #(.size(32)) MUX_ReadData2 (
         .data0_i(RTimmediate),
         .data1_i(RTdata),
-        .select(ReadDataReg),
-        .data_o(ALUIn2)
+        .select_i(ReadDataReg),
+        .data_o(ReadData2)
 );
 
 endmodule

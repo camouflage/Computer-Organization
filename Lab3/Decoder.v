@@ -23,7 +23,9 @@ module Decoder(
 	Jump_o,
 	MemRead_o,
 	MemWrite_o,
-	MemtoReg_o
+	MemtoReg_o,
+	// extra
+	ReadDataReg_o
 );
      
 //I/O ports
@@ -35,13 +37,14 @@ output         ALUSrc_o;
 output         RegDst_o;
 output         Branch_o;
 output		   isOri_o;
-//Soutput		   isBne_o;
+//output		   isBne_o;
 // lab3
 output [2-1:0] BranchType_o;
 output         Jump_o;
 output		   MemRead_o;
 output		   MemWrite_o;
 output [2-1:0] MemtoReg_o;
+output		   ReadDataReg_o;
 
  
 //Internal Signals
@@ -58,6 +61,7 @@ reg            Jump_o;
 reg   		   MemRead_o;
 reg            MemWrite_o;
 reg    [2-1:0] MemtoReg_o;
+reg  		   ReadDataReg_o;
 
 //Parameter
 
@@ -80,6 +84,7 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b010;
 		end
 		// addi
@@ -93,6 +98,7 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b110;
 		end
 		// slti
@@ -106,6 +112,7 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b011;
 		end
 		// beq
@@ -119,6 +126,7 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b001;
 		end
 		// lui
@@ -132,6 +140,7 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b100;
 		end
 		// ori
@@ -145,6 +154,7 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b111;
 			isOri_o = 1;
 		end
@@ -158,7 +168,8 @@ begin
 			Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
-			MemtoReg_o = 2'b11; // don't care
+			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b001;
 			//isBne_o = 1;
 		end
@@ -174,6 +185,7 @@ begin
 			MemRead_o = 1;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b01;
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b110;
 		end
 		// sw
@@ -186,7 +198,8 @@ begin
 			Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 1;
-			MemtoReg_o = 2'b01; // don't care
+			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b110;
 		end
 		// jump
@@ -200,23 +213,51 @@ begin
 			MemRead_o = 0; // don't care
 			MemWrite_o = 0; // don't care
 			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b010; // don't care
 		end
-		/*
 		// bgt
 		6'b000111: begin
 			RegDst_o = 0; // don't care
 			ALUSrc_o = 0;
 			RegWrite_o = 0;
 			Branch_o = 1;
-			BranchType_o = 2'b00;
+			BranchType_o = 2'b01; // !slt && !zero == !(slt || zero)
 			Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
-			ALU_op_o = 3'b001;
+			ReadDataReg_o = 1;
+			ALU_op_o = 3'b011;
 		end
-		*/
+		// bnez ( rs bne 0 )
+		6'b000101: begin
+			RegDst_o = 0; // don't care
+			ALUSrc_o = 0;
+			RegWrite_o = 0;
+			Branch_o = 1;
+			BranchType_o = 2'b11;
+			Jump_o = 0;
+			MemRead_o = 0;
+			MemWrite_o = 0;
+			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 0;
+			ALU_op_o = 3'b011;
+		end
+		// bgez ( bgt 1 )
+		6'b000001: begin
+			RegDst_o = 0; // don't care
+			ALUSrc_o = 0;
+			RegWrite_o = 0;
+			Branch_o = 1;
+			BranchType_o = 2'b01; // same as bgt
+			Jump_o = 0;
+			MemRead_o = 0;
+			MemWrite_o = 0;
+			MemtoReg_o = 2'b00; // don't care
+			ReadDataReg_o = 1;
+			ALU_op_o = 3'b011;
+		end
 		// default
 		default: begin
 			RegDst_o = 1'bx;

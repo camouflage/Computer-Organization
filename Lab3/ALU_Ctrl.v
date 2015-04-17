@@ -65,13 +65,12 @@ begin
 			endcase
 		end
 		// addi & lw & sw
-		3'b110: begin
+		3'b110:
 			ALUCtrl_o =  4'b0010;
-		end
 		// slti
 		3'b011:
 			ALUCtrl_o =  4'b0111;
-		// beq & bne (sub)
+		// beq & bne (sub) & bnez
 		3'b001:
 			ALUCtrl_o =  4'b0110;
 		// lui
@@ -80,6 +79,10 @@ begin
 		// ori
 		3'b111:
 			ALUCtrl_o =  4'b0001;
+
+		// extra in lab3
+		3'b000:
+			ALUCtrl_o = 4'b1000;
 		// default
 		default:
 			ALUCtrl_o = 4'bxxxx;

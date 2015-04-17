@@ -95,7 +95,6 @@ case( ctrl_i )
 	4'b0100:
 		result_o = src2_i << 16;
 
-
 	// default: set to unknown
 	default:
 		result_o = 32'bx;
