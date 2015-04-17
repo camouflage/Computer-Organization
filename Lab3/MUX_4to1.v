@@ -42,7 +42,7 @@ begin
 		2'b10:
 			data_o = data2_i;
 		2'b11:
-			data_o = data3_i;	
+			data_o = data3_i;
 	endcase
 end
 

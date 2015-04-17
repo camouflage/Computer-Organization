@@ -180,8 +180,8 @@ MUX_2to1 #(.size(32)) MUX_Jump (
 
 MUX_4to1 #(.size(1)) MUX_BranchType (
         .data0_i(ALUZero),
-        .data1_i(!(ALUZero || ALUResult)),
-        .data2_i(!ALUResult),
+        .data1_i(!(ALUZero || ALUResult[31])),
+        .data2_i(!ALUResult[31] || ALUResult == -32'd1), // trick.....
         .data3_i(!ALUZero),
         .select_i(BranchType),
         .data_o(Branch2)

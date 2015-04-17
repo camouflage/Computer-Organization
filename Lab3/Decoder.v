@@ -222,14 +222,15 @@ begin
 			ALUSrc_o = 0;
 			RegWrite_o = 0;
 			Branch_o = 1;
-			BranchType_o = 2'b01; // !slt && !zero == !(slt || zero)
+			BranchType_o = 2'b01;
 			Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
 			ReadDataReg_o = 1;
-			ALU_op_o = 3'b011;
+			ALU_op_o = 3'b001;
 		end
+		/*
 		// bnez ( rs bne 0 )
 		6'b000101: begin
 			RegDst_o = 0; // don't care
@@ -244,19 +245,20 @@ begin
 			ReadDataReg_o = 0;
 			ALU_op_o = 3'b011;
 		end
-		// bgez ( bgt 1 )
+		*/
+		// bgez
 		6'b000001: begin
 			RegDst_o = 0; // don't care
 			ALUSrc_o = 0;
 			RegWrite_o = 0;
 			Branch_o = 1;
-			BranchType_o = 2'b01; // same as bgt
+			BranchType_o = 2'b10;
 			Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
-			ReadDataReg_o = 1;
-			ALU_op_o = 3'b011;
+			ReadDataReg_o = 0;
+			ALU_op_o = 3'b001;
 		end
 		// default
 		default: begin
