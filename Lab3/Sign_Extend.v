@@ -38,19 +38,19 @@ endmodule
 /*
 module stimulus;
 reg isOri;
-reg[16-1: 0] in;
+reg[5-1: 0] in;
 wire[32-1: 0] out;
 
-Sign_Extend se(isOri, in, out);
+Sign_Extend #(.size(5)) se(isOri, in, out);
 
 initial
 begin
 	isOri = 0;
-	in = 31;
+	in = 5'b11100;
 	#1 $display("%b %b", in, out);
 	
 
-	in = -6;
+	in = 5'b00001;
 	#1 $display("%b %b", in, out);
 end
 

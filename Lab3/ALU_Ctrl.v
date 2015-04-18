@@ -70,7 +70,7 @@ begin
 		// slti
 		3'b011:
 			ALUCtrl_o =  4'b0111;
-		// beq & bne (sub) & bnez
+		// beq & bne (sub) & bgt
 		3'b001:
 			ALUCtrl_o =  4'b0110;
 		// lui
@@ -81,8 +81,9 @@ begin
 			ALUCtrl_o =  4'b0001;
 
 		// extra in lab3
-		3'b000:
-			ALUCtrl_o = 4'b1000;
+		// bgez (mul)
+		3'b101:
+			ALUCtrl_o = 4'b0011;
 		// default
 		default:
 			ALUCtrl_o = 4'bxxxx;

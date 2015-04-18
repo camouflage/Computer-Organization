@@ -258,7 +258,7 @@ begin
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
 			ReadDataReg_o = 0;
-			ALU_op_o = 3'b001;
+			ALU_op_o = 3'b101;
 		end
 		// default
 		default: begin
