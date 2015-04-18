@@ -24,6 +24,8 @@ wire [32-1:0] pcADDIm;
 wire [32-1:0] pcNew;
 wire [32-1:0] instr;
 wire [32-1:0] pcBeforeJump;
+wire [32-1:0] pcBeforeJr;
+wire [5-1:0]  RegToWrite1;
 
 // data
 wire [32-1:0] RSdata;
@@ -59,6 +61,8 @@ wire [2-1:0] MemtoReg;
 wire Branch2;
 // extra
 wire ReadDataReg;
+wire IsJal;
+wire IsJr;
 
 // register
 wire [5-1:0] WriteReg;
@@ -89,7 +93,7 @@ MUX_2to1 #(.size(5)) Mux_Write_Reg(
         .data0_i(instr[20:16]),
         .data1_i(instr[15:11]),
         .select_i(RegDst),
-        .data_o(WriteReg)
+        .data_o(RegToWrite1)
 );	
 		
 Reg_File RF(
@@ -118,13 +122,15 @@ Decoder Decoder(
         .MemRead_o(MemRead),
         .MemWrite_o(MenWrite),
         .MemtoReg_o(MemtoReg),
-        .ReadDataReg_o(ReadDataReg)
+        .ReadDataReg_o(ReadDataReg),
+        .isJal_o(IsJal)
 );
 
 ALU_Ctrl AC(
         .funct_i(instr[6-1:0]),   
         .ALUOp_i(ALUOp),   
-        .ALUCtrl_o(ALUCtrl) 
+        .ALUCtrl_o(ALUCtrl),
+        .isJr_o(IsJr)
 );
 	
 Sign_Extend #(.size(16)) SE(
@@ -175,7 +181,7 @@ MUX_2to1 #(.size(32)) MUX_Jump (
         .data0_i(pcBeforeJump),
         .data1_i({pcAdd4[31:28], instr[25:0], 2'b00}), // cancatenation
         .select_i(Jump),
-        .data_o(pcOld)
+        .data_o(pcBeforeJr)
 );
 
 MUX_4to1 #(.size(1)) MUX_BranchType (
@@ -191,7 +197,7 @@ MUX_4to1 #(.size(32)) MUX_MemToReg (
         .data0_i(ALUResult),
         .data1_i(ReadData),
         .data2_i(immediate),
-        .data3_i(),
+        .data3_i(pcAdd4), // for jal
         .select_i(MemtoReg),
         .data_o(WriteDataReg)
 );
@@ -219,6 +225,19 @@ MUX_2to1 #(.size(32)) MUX_ReadData2 (
         .data_o(ReadData2)
 );
 
+MUX_2to1 #(.size(5)) MUX_Jal (
+        .data0_i(RegToWrite1),
+        .data1_i(5'b11111), // $ra
+        .select_i(IsJal),
+        .data_o(WriteReg)
+);
+
+MUX_2to1 #(.size(32)) MUX_Jr (
+        .data0_i(pcBeforeJr),
+        .data1_i(ALUResult),
+        .select_i(IsJr),
+        .data_o(pcOld)
+);
 endmodule
 		  
 

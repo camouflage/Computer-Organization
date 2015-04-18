@@ -12,7 +12,8 @@
 module ALU_Ctrl(
           funct_i,
           ALUOp_i,
-          ALUCtrl_o
+          ALUCtrl_o,
+          isJr_o,
 );
           
 //I/O ports 
@@ -20,16 +21,17 @@ input      [6-1:0] funct_i;
 input      [3-1:0] ALUOp_i;
 
 output     [4-1:0] ALUCtrl_o;
-     
+output			   isJr_o;
 //Internal Signals
 reg        [4-1:0] ALUCtrl_o;
-
+reg 			   isJr_o;
 //Parameter
 
        
 //Select exact operation
 always @(funct_i or ALUOp_i)
 begin
+	isJr_o = 0;
 	case (ALUOp_i)
 		// R-type
 		3'b010: begin
@@ -62,6 +64,11 @@ begin
 				// mult
 				6'b011000:
 					ALUCtrl_o = 4'b0011;
+				// jr
+				6'b001000: begin
+					ALUCtrl_o = 4'b0011;
+					isJr_o = 1;
+				end
 			endcase
 		end
 		// addi & lw & sw

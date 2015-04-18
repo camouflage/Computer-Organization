@@ -25,7 +25,8 @@ module Decoder(
 	MemWrite_o,
 	MemtoReg_o,
 	// extra
-	ReadDataReg_o
+	ReadDataReg_o,
+	isJal_o
 );
      
 //I/O ports
@@ -45,6 +46,7 @@ output		   MemRead_o;
 output		   MemWrite_o;
 output [2-1:0] MemtoReg_o;
 output		   ReadDataReg_o;
+output         isJal_o;
 
  
 //Internal Signals
@@ -62,6 +64,7 @@ reg   		   MemRead_o;
 reg            MemWrite_o;
 reg    [2-1:0] MemtoReg_o;
 reg  		   ReadDataReg_o;
+reg            isJal_o;
 
 //Parameter
 
@@ -70,6 +73,7 @@ reg  		   ReadDataReg_o;
 always @(instr_op_i)
 begin
 	isOri_o = 0;
+	isJal_o = 0;
 	//isBne_o = 0;
 	// ALU_op_o ???
 	case(instr_op_i)
@@ -213,7 +217,7 @@ begin
 			MemRead_o = 0; // don't care
 			MemWrite_o = 0; // don't care
 			MemtoReg_o = 2'b00; // don't care
-			ReadDataReg_o = 1;
+			ReadDataReg_o = 1; // don't care
 			ALU_op_o = 3'b010; // don't care
 		end
 		// bgt
@@ -230,22 +234,6 @@ begin
 			ReadDataReg_o = 1;
 			ALU_op_o = 3'b001;
 		end
-		/*
-		// bnez ( rs bne 0 )
-		6'b000101: begin
-			RegDst_o = 0; // don't care
-			ALUSrc_o = 0;
-			RegWrite_o = 0;
-			Branch_o = 1;
-			BranchType_o = 2'b11;
-			Jump_o = 0;
-			MemRead_o = 0;
-			MemWrite_o = 0;
-			MemtoReg_o = 2'b00; // don't care
-			ReadDataReg_o = 0;
-			ALU_op_o = 3'b011;
-		end
-		*/
 		// bgez
 		6'b000001: begin
 			RegDst_o = 0; // don't care
@@ -257,9 +245,25 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
-			ReadDataReg_o = 0;
+			ReadDataReg_o = 0; 
 			ALU_op_o = 3'b101;
 		end
+		// jal
+		6'b000011: begin
+			RegDst_o = 0; // don't care
+			ALUSrc_o = 0; // don't care
+			RegWrite_o = 1;
+			Branch_o = 0; // don't care
+			BranchType_o = 2'b00; // don't care
+			Jump_o = 1;
+			MemRead_o = 0; // don't care
+			MemWrite_o = 0; // don't care
+			MemtoReg_o = 2'b11;
+			ReadDataReg_o = 0; // don't care
+			ALU_op_o = 3'b010; // don't care
+			isJal_o = 1;
+		end
+
 		// default
 		default: begin
 			RegDst_o = 1'bx;
