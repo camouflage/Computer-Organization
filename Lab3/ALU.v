@@ -76,10 +76,8 @@ case( ctrl_i )
 	4'b1110:
 		result_o = src1_i != src2_i;
 	// mult
-	4'b0011: begin
+	4'b0011:
 		result_o = $signed(src1_i) * $signed(src2_i);
-		$display("%b %b %b", src1_i, src2_i, result_o);
-	end
 	/*
 	// seqz
 	4'b0100:

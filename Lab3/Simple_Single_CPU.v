@@ -63,6 +63,7 @@ wire Branch2;
 wire ReadDataReg;
 wire IsJal;
 wire IsJr;
+wire RegWrite_i;
 
 // register
 wire [5-1:0] WriteReg;
@@ -110,7 +111,7 @@ Reg_File RF(
 	
 Decoder Decoder(
         .instr_op_i(instr[31:26]), 
-	.RegWrite_o(RegWrite), 
+	.RegWrite_o(RegWriteIn), 
 	.ALU_op_o(ALUOp),   
 	.ALUSrc_o(ALUSrc),   
 	.RegDst_o(RegDst),   
@@ -130,7 +131,9 @@ ALU_Ctrl AC(
         .funct_i(instr[6-1:0]),   
         .ALUOp_i(ALUOp),   
         .ALUCtrl_o(ALUCtrl),
-        .isJr_o(IsJr)
+        .isJr_o(IsJr),
+        .RegWrite_i(RegWriteIn),
+        .RegWrite_o(RegWrite)
 );
 	
 Sign_Extend #(.size(16)) SE(
