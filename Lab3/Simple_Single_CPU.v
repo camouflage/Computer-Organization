@@ -111,7 +111,8 @@ Reg_File RF(
 	
 Decoder Decoder(
         .instr_op_i(instr[31:26]), 
-	.RegWrite_o(RegWriteIn), 
+	//.RegWrite_o(RegWriteIn), 
+        .RegWrite_o(RegWrite), 
 	.ALU_op_o(ALUOp),   
 	.ALUSrc_o(ALUSrc),   
 	.RegDst_o(RegDst),   
@@ -130,10 +131,10 @@ Decoder Decoder(
 ALU_Ctrl AC(
         .funct_i(instr[6-1:0]),   
         .ALUOp_i(ALUOp),   
-        .ALUCtrl_o(ALUCtrl),
-        .isJr_o(IsJr),
-        .RegWrite_i(RegWriteIn),
-        .RegWrite_o(RegWrite)
+        .ALUCtrl_o(ALUCtrl)
+        //.isJr_o(IsJr),
+        //.RegWrite_i(RegWriteIn),
+        //.RegWrite_o(RegWrite)
 );
 	
 Sign_Extend #(.size(16)) SE(
@@ -184,7 +185,8 @@ MUX_2to1 #(.size(32)) MUX_Jump (
         .data0_i(pcBeforeJump),
         .data1_i({pcAdd4[31:28], instr[25:0], 2'b00}), // cancatenation
         .select_i(Jump),
-        .data_o(pcBeforeJr)
+        //.data_o(pcBeforeJr)
+        .data_o(pcOld)
 );
 
 MUX_4to1 #(.size(1)) MUX_BranchType (
@@ -234,13 +236,14 @@ MUX_2to1 #(.size(5)) MUX_Jal (
         .select_i(IsJal),
         .data_o(WriteReg)
 );
-
+/*
 MUX_2to1 #(.size(32)) MUX_Jr (
         .data0_i(pcBeforeJr),
         .data1_i(ALUResult),
-        .select_i(IsJr),
+        .select_i(1'b0),
         .data_o(pcOld)
 );
+*/
 endmodule
 		  
 
