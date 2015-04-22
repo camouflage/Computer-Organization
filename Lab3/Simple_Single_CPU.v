@@ -63,7 +63,7 @@ wire Branch2;
 wire ReadDataReg;
 wire IsJal;
 wire IsJr;
-wire RegWrite_i;
+wire IsJr2;
 
 // register
 wire [5-1:0] WriteReg;
@@ -110,8 +110,8 @@ Reg_File RF(
 );
 	
 Decoder Decoder(
-        .instr_op_i(instr[31:26]), 
-	//.RegWrite_o(RegWriteIn), 
+        .instr_op_i(instr[31:26]),
+        .instr_funct_i(instr[6-1:0]),
         .RegWrite_o(RegWrite), 
 	.ALU_op_o(ALUOp),   
 	.ALUSrc_o(ALUSrc),   
@@ -124,17 +124,14 @@ Decoder Decoder(
         .MemWrite_o(MenWrite),
         .MemtoReg_o(MemtoReg),
         .ReadDataReg_o(ReadDataReg),
-        .isJal_o(IsJal)
+        .isJal_o(IsJal),
+        .isJr_o(IsJr)
 );
 
 ALU_Ctrl AC(
         .funct_i(instr[6-1:0]),   
         .ALUOp_i(ALUOp),   
-        .ALUCtrl_o(ALUCtrl),
-        .isJr_o(IsJr),
-        .RegWrite_i(RegWrite)
-        //.RegWrite_i(RegWriteIn),
-        //.RegWrite_o(RegWrite)
+        .ALUCtrl_o(ALUCtrl)
 );
 	
 Sign_Extend #(.size(16)) SE(
@@ -238,8 +235,8 @@ MUX_2to1 #(.size(5)) MUX_Jal (
 
 MUX_2to1 #(.size(32)) MUX_Jr (
         .data0_i(pcBeforeJr),
-        .data1_i(ALUResult),
-        .select_i(1'b0),
+        .data1_i(RSdata),
+        .select_i(IsJr),
         .data_o(pcOld)
 );
 

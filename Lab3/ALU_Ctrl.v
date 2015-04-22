@@ -12,32 +12,22 @@
 module ALU_Ctrl(
           funct_i,
           ALUOp_i,
-          ALUCtrl_o,
-          isJr_o,
-          RegWrite_i,
-          //RegWrite_o
+          ALUCtrl_o
 );
           
 //I/O ports 
 input      [6-1:0] funct_i;
 input      [3-1:0] ALUOp_i;
-input			   RegWrite_i;
 
 output     [4-1:0] ALUCtrl_o;
-output			   isJr_o; // trick
-//output		       RegWrite_o; // trick
 //Internal Signals
 reg        [4-1:0] ALUCtrl_o;
-reg 			   isJr_o;
-//reg 		       RegWrite_o;
 //Parameter
 
        
 //Select exact operation
 always @(funct_i or ALUOp_i)
 begin
-	isJr_o = 0;
-	//RegWrite_o = RegWrite_i;
 	case (ALUOp_i)
 		// R-type
 		3'b010: begin
@@ -71,18 +61,13 @@ begin
 				6'b011000:
 					ALUCtrl_o = 4'b0011;
 				// jr
-				6'b001000: begin
-					ALUCtrl_o = 4'b0010;
-					isJr_o = 1;
-					//RegWrite_o = 0;
-				end
+				6'b001000:
+					ALUCtrl_o = 4'b0000;
 			endcase
 		end
 		// addi & lw & sw
-		3'b110: begin
+		3'b110:
 			ALUCtrl_o =  4'b0010;
-			$display("%b", RegWrite_i);
-		end
 		// slti
 		3'b011:
 			ALUCtrl_o =  4'b0111;

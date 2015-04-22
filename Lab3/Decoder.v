@@ -11,13 +11,13 @@
 
 module Decoder(
     instr_op_i,
+    instr_funct_i, // for jr
 	RegWrite_o,
 	ALU_op_o,
 	ALUSrc_o,
 	RegDst_o,
 	Branch_o,
 	isOri_o,
-	//isBne_o,
 	// lab3
 	BranchType_o,
 	Jump_o,
@@ -26,11 +26,13 @@ module Decoder(
 	MemtoReg_o,
 	// extra
 	ReadDataReg_o,
-	isJal_o
+	isJal_o,
+	isJr_o
 );
      
 //I/O ports
 input  [6-1:0] instr_op_i;
+input  [6-1:0] instr_funct_i;
 
 output         RegWrite_o;
 output [3-1:0] ALU_op_o;
@@ -38,7 +40,7 @@ output         ALUSrc_o;
 output         RegDst_o;
 output         Branch_o;
 output		   isOri_o;
-//output		   isBne_o;
+
 // lab3
 output [2-1:0] BranchType_o;
 output         Jump_o;
@@ -47,6 +49,7 @@ output		   MemWrite_o;
 output [2-1:0] MemtoReg_o;
 output		   ReadDataReg_o;
 output         isJal_o;
+output         isJr_o;
 
  
 //Internal Signals
@@ -56,7 +59,7 @@ reg            RegWrite_o;
 reg            RegDst_o;
 reg            Branch_o;
 reg 		   isOri_o;
-//reg		       isBne_o;
+
 // lab3
 reg    [2-1:0] BranchType_o;
 reg            Jump_o;
@@ -65,6 +68,7 @@ reg            MemWrite_o;
 reg    [2-1:0] MemtoReg_o;
 reg  		   ReadDataReg_o;
 reg            isJal_o;
+reg            isJr_o;
 
 //Parameter
 
@@ -74,7 +78,7 @@ always @(instr_op_i)
 begin
 	isOri_o = 0;
 	isJal_o = 0;
-	//isBne_o = 0;
+	isJr_o = 0;
 	// ALU_op_o ???
 	case(instr_op_i)
 		// R-type
@@ -90,6 +94,9 @@ begin
 			MemtoReg_o = 2'b00; // don't care
 			ReadDataReg_o = 1;
 			ALU_op_o = 3'b010;
+			if ( instr_funct_i == 6'b001000 ) begin
+				isJr_o = 1;
+			end
 		end
 		// addi
 		6'b001000: begin
