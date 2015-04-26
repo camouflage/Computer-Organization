@@ -75,7 +75,7 @@ reg    [2-1:0] isJJr_o;
 
 
 //Main function
-always @(instr_op_i)
+always @(instr_op_i or instr_funct_i)
 begin
 	isOri_o = 0;
 	isJal_o = 0;
@@ -96,7 +96,6 @@ begin
 			ReadDataReg_o = 1;
 			ALU_op_o = 3'b010; 
 			if ( instr_funct_i == 6'b001000 ) begin
-				$display("Jr!!!"); 
 				//isJr_o = 1;;
 				isJJr_o = 2'b01;
 			end
