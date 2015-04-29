@@ -10,7 +10,7 @@
 //--------------------------------------------------------------------------------
 module Pipe_CPU_1(
         clk_i,
-		rst_n
+	rst_n
 );
     
 /****************************************
@@ -30,28 +30,30 @@ wire [32-1:0] instr;
 /**** ID stage ****/
 wire [32-1:0] RSdata;
 wire [32-1:0] RTdata;
+wire [32-1:0] immediate;
+wire [32-1:0] ALUIn2;
+wire [32-1:0] ALUResult;
+wire          ALUZero;
+wire [64-1:0] AfterIF_ID;
 //control signal
 wire RegDst;
 wire [3-1:0] ALUOp;
 wire ALUSrc;
+wire Branch;
 wire MemRead;
 wire MemWrite;
 wire RegWrite;
 wire MemtoReg;
 
 /**** EX stage ****/
-wire [32-1:0] immediate;
+
+//control signal
+wire [4-1:0] ALUCtrl;
 //control signal
 
 
 /**** MEM stage ****/
-wire [32-1:0] RSdata;
-wire [32-1:0] RTdata;
-wire [32-1:0] ALUIn2;
-wire [32-1:0] ALUResult;
-wire          ALUZero;
-//control signal
-wire [4-1:0] ALUCtrl;
+
 
 /**** WB stage ****/
 
@@ -64,33 +66,36 @@ Instnatiate modules
 //Instantiate the components in IF stage
 PC PC(
         .clk_i(clk_i),      
-		.rst_i(rst_i),     
+	.rst_i(rst_n),     
         .pc_in_i(pcOld),   
         .pc_out_o(pcNew) 
 );
 
 Instr_Memory IM(
         .pc_addr_i(pcNew),  
-		.instr_o(instr)
+	.instr_o(instr)
 );
 			
 Adder Add_pc(
         .src1_i(pcNew),     
-		.src2_i(32'd4),     
-		.sum_o(pcOld)  
+	.src2_i(32'd4),     
+	.sum_o(pcOld)  
 );
 
 		
 Pipe_Reg #(64)) IF_ID(       //N is the total length of input/output
-
+        .rst_i(rst_n),
+        .clk_i(clk_i),
+        .data_i({pcOld, instr}),
+        .data_o(AfterIF_ID)
 );
 		
 //Instantiate the components in ID stage
 Reg_File RF(
-	    .clk_i(clk_i),      
-		.rst_i(rst_i),     
-        .RSaddr_i(instr[25:21]),  
-        .RTaddr_i(instr[20:16]),  
+	.clk_i(clk_i),      
+	.rst_i(rst_i),     
+        .RSaddr_i(AfterIF_ID[25:21]),  
+        .RTaddr_i(AfterIF_ID[20:16]),  
         .RDaddr_i(),  
         .RDdata_i(),
         .RegWrite_i(),
@@ -99,22 +104,27 @@ Reg_File RF(
 );
 
 Decoder Control(
-	    .instr_op_i(instr[31:26]),
+	.instr_op_i(AfterIF_ID[31:26]),
         .RegDst_o(RegDst),
-		.ALU_op_o(ALUOp),   
-		.ALUSrc_o(ALUSrc),   
+	.ALU_op_o(ALUOp),   
+	.ALUSrc_o(ALUSrc),   
         .MemRead_o(MemRead),
+        .Branch(Branch),
         .MemWrite_o(MemWrite),
         .RegWrite_o(RegWrite),
         .MemtoReg_o(MemtoReg)
 );
 
 Sign_Extend Sign_Extend(
-        .data_i(instr[15:0]),
+        .data_i(AfterIF_ID[15:0]),
         .data_o(immediate)
 );	
 
 Pipe_Reg #(.size() ID_EX(
+        .rst_i(rst_n),
+        .clk_i(clk_i),
+        .data_i({RegDst, ALUOp, ALUSrc, MemRead, Branch, MemWrite, RegWrite,
+                MemtoReg, }) // HERE!!!!!!!!!!!!!!
 
 );
 		
@@ -122,11 +132,11 @@ Pipe_Reg #(.size() ID_EX(
 ALU ALU(
         .rst_n(rst_i),
         .src1_i(RSdata),
-		.src2_i(ALUIn2),
-		.ctrl_i(ALUCtrl),
+	.src2_i(ALUIn2),
+	.ctrl_i(ALUCtrl),
         .shamt_i(instr[10:6]),
-		.result_o(ALUResult),
-		.zero_o(ALUZero)
+	.result_o(ALUResult),
+	.zero_o(ALUZero)
 );
 		
 ALU_Control ALU_Control(
@@ -136,7 +146,7 @@ ALU_Control ALU_Control(
 );
 
 MUX_2to1 #(.size(32)) Mux_ALUSrc(
-	    .data0_i(RTdata),
+	.data0_i(RTdata),
         .data1_i(immediate),
         .select_i(ALUSrc),
         .data_o(ALUIn2)
@@ -156,7 +166,7 @@ Data_Memory DM(
         .addr_i(ALUResult),
         .data_i(RTdata),
         .MemRead_i(MemRead),
-        .MemWrite_i(MenWrite),
+        .MemWrite_i(MemWrite),
         .data_o(ReadData)
 );
 
