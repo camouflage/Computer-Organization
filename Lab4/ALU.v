@@ -97,9 +97,10 @@ case( ctrl_i )
 
 	// default: set to unknown
 	default:
-		result_o = 32'bx;
+		result_o = 32'b0;
 
 endcase
+//$display("%b", result_o);
 end
 
 assign zero_o = result_o == 0;

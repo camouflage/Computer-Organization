@@ -45,8 +45,10 @@ always @( negedge rst_n or negedge clk_i  ) begin    if(rst_n == 0) begin
         Reg_File[28] <= 0; Reg_File[29] <= {32'd128}; Reg_File[30] <= 0; Reg_File[31] <= 0;
 	end
     else begin
-        if(RegWrite_i) 
+        if(RegWrite_i) begin
+            //$display("%b %b", RDaddr_i, RDdata_i);
             Reg_File[RDaddr_i] <= RDdata_i;	
+        end
 		else 
 		    Reg_File[RDaddr_i] <= Reg_File[RDaddr_i];
 	end

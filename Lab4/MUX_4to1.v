@@ -34,6 +34,7 @@ reg     [size-1:0] data_o;
 //Main function
 always @(data0_i or data1_i or data2_i or data3_i or select_i)
 begin
+	//$display("%b %b %b", data0_i, data1_i, select_i);
 	case (select_i)
 		2'b00:
 			data_o = data0_i;

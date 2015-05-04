@@ -31,6 +31,7 @@ begin
 	case (ALUOp_i)
 		// R-type
 		3'b010: begin
+			//$display("%b", funct_i);
 			case (funct_i)
 				// add
 				6'b100000:
@@ -47,7 +48,7 @@ begin
 				// slt
 				6'b101010:
 					ALUCtrl_o = 4'b0111;
-
+				/*
 				// using unused ALU_ctrl
 				// sll
 				6'b000000:
@@ -55,7 +56,7 @@ begin
 				// srlv
 				6'b000110:
 					ALUCtrl_o = 4'b1111;
-
+				*/
 				// lab3
 				// mult
 				6'b011000:
@@ -63,6 +64,9 @@ begin
 				// jr
 				6'b001000:
 					ALUCtrl_o = 4'b0000;
+
+				default:
+					ALUCtrl_o = 4'bxxxx;
 			endcase
 		end
 		// addi & lw & sw

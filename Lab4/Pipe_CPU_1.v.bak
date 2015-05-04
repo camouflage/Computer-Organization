@@ -69,7 +69,7 @@ wire [71-1:0]  AfterMEM_WB;
 Instnatiate modules
 ****************************************/
 //Instantiate the components in IF stage
-ProgramCounter PC(
+PC PC(
         .clk_i(clk_i),      
 	    .rst_i(rst_n),     
         .pc_in_i(pcOld),   
@@ -98,7 +98,7 @@ Pipe_Reg #(.size(64)) IF_ID(       //N is the total length of input/output
 //Instantiate the components in ID stage
 Reg_File RF(
 	    .clk_i(clk_i),      
-	    .rst_n(rst_n),     
+	    .rst_i(rst_i),     
         .RSaddr_i(AfterIF_ID[25:21]),  // instr[25:21]
         .RTaddr_i(AfterIF_ID[20:16]),  // instr[20:16]
         .RDaddr_i(AfterMEM_WB[4:0]),
@@ -113,7 +113,7 @@ Decoder Control(
         .RegDst_o(RegDst),
 	    .ALU_op_o(ALUOp),   
 	    .ALUSrc_o(ALUSrc),
-        .Branch_o(Branch),   
+        .Branch(Branch),   
         .MemRead_o(MemRead),
         .MemWrite_o(MemWrite),
         .RegWrite_o(RegWrite),
@@ -139,7 +139,7 @@ Pipe_Reg #(.size(148)) ID_EX(
 		
 //Instantiate the components in EX stage	   
 ALU ALU(
-        .rst_n(rst_n),
+        .rst_n(rst_i),
         .src1_i(AfterID_EX[105:74]), // RSdata
 	    .src2_i(ALUIn2),
 	    .ctrl_i(ALUCtrl),
@@ -148,7 +148,7 @@ ALU ALU(
 	    .zero_o(ALUZero)
 );
 		
-ALU_Ctrl ALU_Control(
+ALU_Control ALU_Control(
         .funct_i(AfterID_EX[15:10]),   // instr[5:0]
         .ALUOp_i(AfterID_EX[146:144]),   // ALUOp
         .ALUCtrl_o(ALUCtrl)
@@ -210,3 +210,4 @@ MUX_2to1 #(.size(32)) Mux_MemToReg(
 signal assignment
 ****************************************/	
 endmodule
+

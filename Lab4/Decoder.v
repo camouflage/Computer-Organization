@@ -19,7 +19,7 @@ module Decoder(
 	MemRead_o,
 	MemWrite_o,
 	RegWrite_o,
-	MemtoReg_o,
+	MemtoReg_o
 	//isOri_o,
 	//BranchType_o,
 	//Jump_o,
@@ -73,6 +73,7 @@ reg            MemtoReg_o;
 //Main function
 always @(instr_op_i)
 begin
+	//$display("%b", instr_op_i);
 	//isOri_o = 0;
 	//isJal_o = 0;
 	//isJr_o = 0;
@@ -88,7 +89,7 @@ begin
 			//Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
-			MemtoReg_o = 0;
+			MemtoReg_o = 1;
 			//ReadDataReg_o = 1;
 			ALU_op_o = 3'b010; 
 			/*
@@ -108,7 +109,7 @@ begin
 			//Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
-			MemtoReg_o = 0;
+			MemtoReg_o = 1;
 			//ReadDataReg_o = 1;
 			ALU_op_o = 3'b110;
 		end
@@ -196,7 +197,7 @@ begin
 			//Jump_o = 0;
 			MemRead_o = 1;
 			MemWrite_o = 0;
-			MemtoReg_o = 1;
+			MemtoReg_o = 0;
 			//ReadDataReg_o = 1;
 			ALU_op_o = 3'b110;
 		end
@@ -277,14 +278,14 @@ begin
 		*/
 		// default
 		default: begin
-			RegDst_o = 1'bx;
-			ALUSrc_o = 1'bx;
-			Branch_o = 1'bx;
-			MemRead_o = 1'bx;
-			MemWrite_o = 1'bx;
-			RegWrite_o = 1'bx;
-			MemtoReg_o = 1'bx;
-			ALU_op_o = 3'bxxx;
+			RegDst_o = 1'b0;
+			ALUSrc_o = 1'b0;
+			Branch_o = 1'b0;
+			MemRead_o = 1'b0;
+			MemWrite_o = 1'b0;
+			RegWrite_o = 1'b0;
+			MemtoReg_o = 1'b0;
+			ALU_op_o = 3'b000;
 		end
 	endcase
 
