@@ -107,7 +107,7 @@ Reg_File RF(
         .RDaddr_i(AfterMEM_WB[4:0]),
         .RDdata_i(WriteDataReg),
         .RegWrite_i(AfterMEM_WB[70]), // RegWrite
-        .RSdata_o(RSdata),  
+        .RSdata_o(RSdata),
         .RTdata_o(RTdata) 
 );
 
@@ -168,20 +168,20 @@ Forwarding_Unit Forwarding_Unit(
         .ForwardB_o(ForwardB)
 );
 
-MUX_4to1 #(.size(32)) Mux_ForwardA(
+MUX_3to1 #(.size(32)) Mux_ForwardA(
         .data0_i(AfterID_EX[105:74]), // RSdata
         .data1_i(WriteDataReg), // WB_ALUResult
         .data2_i(AfterEX_MEM[68:37]), // MEM_ALUResult
-        .data3_i(),
+        //.data3_i(),
         .select_i(ForwardA),
         .data_o(ALUSrc1)
 );
 
-MUX_4to1 #(.size(32)) Mux_ForwardB(
+MUX_3to1 #(.size(32)) Mux_ForwardB(
         .data0_i(AfterID_EX[73:42]), // RTdata
         .data1_i(WriteDataReg), // WB_ALUResult
         .data2_i(AfterEX_MEM[68:37]), // MEM_ALUResult
-        .data3_i(),
+        //.data3_i(),
         .select_i(ForwardB),
         .data_o(ForwardBOut)
 );

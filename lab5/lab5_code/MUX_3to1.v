@@ -1,19 +1,18 @@
-//Subject:     CO project 2 - MUX 4to1
+//Subject:     CO project 5 - MUX 3to1
 //--------------------------------------------------------------------------------
 //Version:     1
 //--------------------------------------------------------------------------------
 //Writer:      孫聖 0340249
 //----------------------------------------------
-//Date:        4/9/2015
+//Date:        5/20/2015
 //----------------------------------------------
-//Description: 
+//Description: For debug use.
 //--------------------------------------------------------------------------------
      
-module MUX_4to1(
+module MUX_3to1(
                data0_i,
                data1_i,
                data2_i,
-               data3_i,
                select_i,
                data_o
 );
@@ -24,7 +23,6 @@ parameter size = 0;
 input   [size-1:0] data0_i;          
 input   [size-1:0] data1_i;
 input   [size-1:0] data2_i;
-input   [size-1:0] data3_i;
 input   [2-1:0]    select_i;
 output  [size-1:0] data_o; 
 
@@ -32,9 +30,9 @@ output  [size-1:0] data_o;
 reg     [size-1:0] data_o;
 
 //Main function
-always @(data0_i or data1_i or data2_i or data3_i or select_i)
+always @(data0_i or data1_i or data2_i or select_i)
 begin
-	//$display("%b %b %b", data0_i, data1_i, select_i);
+	//$display("%b %b %b %b", data0_i, data1_i, data2_i, select_i);
 	case (select_i)
 		2'b00:
 			data_o = data0_i;
@@ -42,8 +40,6 @@ begin
 			data_o = data1_i;
 		2'b10:
 			data_o = data2_i;
-		2'b11:
-			data_o = data3_i;
 	endcase
 end
 

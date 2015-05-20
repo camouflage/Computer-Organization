@@ -39,6 +39,7 @@ reg    [2-1:0]	 ForwardB_o;
     
 //Main function
 always @(*) begin
+	//$display("%b, %b, %b, %b, %b, %b", rs_i, rt_i, MEM_RegDst_i, WB_RegDst_i, MEM_RegWrite_i, WB_RegWrite_i);
 	// forwardA
 	if ( MEM_RegWrite_i && MEM_RegDst_i != 0 && MEM_RegDst_i == rs_i )
 		ForwardA_o = 2'b10;
@@ -56,6 +57,7 @@ always @(*) begin
 		ForwardB_o = 2'b01;
 	else 
 		ForwardB_o = 2'b00;
+	//$display("%b, %b", ForwardA_o, ForwardB_o);
 end
 
 endmodule
