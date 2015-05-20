@@ -79,8 +79,8 @@ ProgramCounter PC(
         .pc_out_o(pcNew) 
 );
 
-Instr_Memory IM(
-        .pc_addr_i(pcNew),  
+Instruction_Memory IM(
+        .addr_i(pcNew),  
 	    .instr_o(instr)
 );
 			
@@ -171,7 +171,8 @@ Forwarding_Unit Forwarding_Unit(
 MUX_4to1 #(.size(32)) Mux_ForwardA(
         .data0_i(AfterID_EX[105:74]), // RSdata
         .data1_i(WriteDataReg), // WB_ALUResult
-        .data2_0(AfterEX_MEM[68:37]), // MEM_ALUResult
+        .data2_i(AfterEX_MEM[68:37]), // MEM_ALUResult
+        .data3_i(),
         .select_i(ForwardA),
         .data_o(ALUSrc1)
 );
@@ -179,7 +180,8 @@ MUX_4to1 #(.size(32)) Mux_ForwardA(
 MUX_4to1 #(.size(32)) Mux_ForwardB(
         .data0_i(AfterID_EX[73:42]), // RTdata
         .data1_i(WriteDataReg), // WB_ALUResult
-        .data2_0(AfterEX_MEM[68:37]), // MEM_ALUResult
+        .data2_i(AfterEX_MEM[68:37]), // MEM_ALUResult
+        .data3_i(),
         .select_i(ForwardB),
         .data_o(ForwardBOut)
 );
