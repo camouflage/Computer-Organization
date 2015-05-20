@@ -45,14 +45,17 @@ wire           MemtoReg;
 
 
 /**** EX stage ****/
-wire [32-1:0]  ALUIn2;
+wire [32-1:0]  ALUSrc1;
+wire [32-1:0]  ALUSrc2;
 wire [32-1:0]  ALUResult;
 wire           ALUZero;
 wire [5-1:0]   WriteReg;
 wire [148-1:0] AfterID_EX;
+wire [32-1:0]  ForwardBOut;
 //control signal
 wire [4-1:0]   ALUCtrl;
-
+wire [2-1:0]   ForwardA;
+wire [2-1:0]   ForwardB;
 
 /**** MEM stage ****/
 wire [32-1:0]  ReadData;
@@ -130,18 +133,18 @@ Pipe_Reg #(.size(148)) ID_EX(
         .clk_i(clk_i),
                  // control
         .data_i({RegDst, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite,
-                          // pc + 4
+                          // pc + 4,                         contains RD
                 MemtoReg, AfterIF_ID[63:32], RSdata, RTdata, immediate,
-                // RT,             RD
-                AfterIF_ID[20:16], AfterIF_ID[15:11]}),
+                // RT,             RS
+                AfterIF_ID[20:16], AfterIF_ID[25:21]}),
         .data_o(AfterID_EX)
 );
 		
 //Instantiate the components in EX stage	   
 ALU ALU(
         .rst_n(rst_n),
-        .src1_i(AfterID_EX[105:74]), // RSdata
-	    .src2_i(ALUIn2),
+        .src1_i(ALUSrc1), 
+	    .src2_i(ALUSrc2),
 	    .ctrl_i(ALUCtrl),
         .shamt_i(AfterID_EX[20:16]), // instr[10:6]
 	    .result_o(ALUResult),
@@ -154,16 +157,43 @@ ALU_Ctrl ALU_Control(
         .ALUCtrl_o(ALUCtrl)
 );
 
+Forwarding_Unit Forwarding_Unit(
+        .rs_i(AfterID_EX[4:0]),
+        .rt_i(AfterID_EX[9:5]),
+        .MEM_RegDst_i(AfterEX_MEM[4:0]),
+        .WB_RegDst_i(AfterMEM_WB[4:0]),
+        .MEM_RegWrite_i(AfterEX_MEM[103]),
+        .WB_RegWrite_i(AfterMEM_WB[70]),
+        .ForwardA_o(ForwardA),
+        .ForwardB_o(ForwardB)
+);
+
+MUX_4to1 #(.size(32)) Mux_ForwardA(
+        .data0_i(AfterID_EX[105:74]), // RSdata
+        .data1_i(WriteDataReg), // WB_ALUResult
+        .data2_0(AfterEX_MEM[68:37]), // MEM_ALUResult
+        .select_i(ForwardA),
+        .data_o(ALUSrc1)
+);
+
+MUX_4to1 #(.size(32)) Mux_ForwardB(
+        .data0_i(AfterID_EX[73:42]), // RTdata
+        .data1_i(WriteDataReg), // WB_ALUResult
+        .data2_0(AfterEX_MEM[68:37]), // MEM_ALUResult
+        .select_i(ForwardB),
+        .data_o(ForwardBOut)
+);
+
 MUX_2to1 #(.size(32)) Mux_ALUSrc(
-	    .data0_i(AfterID_EX[73:42]), // RTdata
+	    .data0_i(ForwardBOut), // 
         .data1_i(AfterID_EX[41:10]), // immediate
         .select_i(AfterID_EX[143]), // ALUSrc
-        .data_o(ALUIn2)
+        .data_o(ALUSrc2)
 );
 		
 MUX_2to1 #(.size(5)) Mux_RegDst(
         .data0_i(AfterID_EX[9:5]), // RT
-        .data1_i(AfterID_EX[4:0]), // RD
+        .data1_i(AfterID_EX[41:37]), // RD
         .select_i(AfterID_EX[147]), // RegDst
         .data_o(WriteReg)
 );

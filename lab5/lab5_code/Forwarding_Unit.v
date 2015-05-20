@@ -12,10 +12,10 @@
 module Forwarding_Unit(
     	rs_i,
 		rt_i,
-		EX_MEM_RegDst_i,
-		MEM_WB_RegDst_i,
-		EX_MEM_RegWrite_i,
-		MEM_WB_RegWrite_i,
+		MEM_RegDst_i,
+		WB_RegDst_i,
+		MEM_RegWrite_i,
+		WB_RegWrite_i,
 		ForwardA_o,
 		ForwardB_o
 );
@@ -23,10 +23,10 @@ module Forwarding_Unit(
 //I/O ports
 input  [5-1:0]   rs_i;
 input  [5-1:0]	 rt_i;
-input  [5-1:0]	 EX_MEM_RegDst_i;
-input  [5-1:0]	 MEM_WB_RegDst_i;
-input  			 EX_MEM_RegWrite_i;
-input  			 MEM_WB_RegWrite_i;
+input  [5-1:0]	 MEM_RegDst_i;
+input  [5-1:0]	 WB_RegDst_i;
+input  			 MEM_RegWrite_i;
+input  			 WB_RegWrite_i;
 
 output [2-1:0]	 ForwardA_o;
 output [2-1:0]	 ForwardB_o;
@@ -38,7 +38,25 @@ reg    [2-1:0]	 ForwardB_o;
 //Parameter
     
 //Main function
+always @(*) begin
+	// forwardA
+	if ( MEM_RegWrite_i && MEM_RegDst_i != 0 && MEM_RegDst_i == rs_i )
+		ForwardA_o = 2'b10;
+	else if ( WB_RegWrite_i && WB_RegDst_i != 0 && WB_RegDst_i == rs_i &&
+		!(MEM_RegWrite_i && MEM_RegDst_i != 0 && MEM_RegDst_i == rs_i) )
+		ForwardA_o = 2'b01;
+	else 
+		ForwardA_o = 2'b00;
 
+	// forwardB
+	if ( MEM_RegWrite_i && MEM_RegDst_i != 0 && MEM_RegDst_i == rt_i )
+		ForwardB_o = 2'b10;
+	else if ( WB_RegWrite_i && WB_RegDst_i != 0 && WB_RegDst_i == rt_i &&
+		!(MEM_RegWrite_i && MEM_RegDst_i != 0 && MEM_RegDst_i == rt_i) )
+		ForwardB_o = 2'b01;
+	else 
+		ForwardB_o = 2'b00;
+end
 
 endmodule
 
