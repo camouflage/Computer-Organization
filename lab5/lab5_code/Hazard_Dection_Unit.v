@@ -41,7 +41,12 @@ always @(*) begin
 	if ( EX_MEMRead_i && (EX_Rt_i == rs_i || EX_Rt_i == rt_i) ) begin
 		PCWrite_o = 0;
 		IF_IDWrite_o = 0;
-		Stall_o = 1
+		Stall_o = 1;
+		$display("stall!!");
+	end else begin
+		PCWrite_o = 1;
+		IF_IDWrite_o = 1;
+		Stall_o = 0;
 	end
 end
 

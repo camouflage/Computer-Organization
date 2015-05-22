@@ -45,7 +45,7 @@ wire           MemtoReg;
 wire           PCWrite;
 wire           IF_IDWrite;
 wire           Stall;
-wire [10-1]    Control;
+wire [10-1:0]  ControlSignal;
 
 
 /**** EX stage ****/
@@ -94,9 +94,10 @@ Adder Add_pc(
 	    .sum_o(pcOld)  
 );
 
-Pipe_Reg #(.size(64)) IF_ID(       //N is the total length of input/output
+Pipe_Reg #(.size(64)) IF_ID(       // N is the total length of input/output
         .rst_i(rst_n),
         .clk_i(clk_i),
+        .pipeRegWrite_i(IF_IDWrite),
                  // pc + 4
         .data_i({pcOld, instr}),
         .data_o(AfterIF_ID)
@@ -128,20 +129,20 @@ Decoder Control(
 );
 
 Hazard_Dection_Unit Hazard_Dection_Unit(
-        .rs_i(),
-        .rt_i(),
-        .EX_Rt_i(),
-        .EX_MEMRead_i(),
-        .PCWrite_o(),
-        .IF_IDWrite_o(),
-        .Stall_o()
+        .rs_i(AfterIF_ID[25:21]),
+        .rt_i(AfterIF_ID[20:16]),
+        .EX_Rt_i(AfterID_EX[9:5]),
+        .EX_MEMRead_i(AfterID_EX[141]),
+        .PCWrite_o(PCWrite),
+        .IF_IDWrite_o(IF_IDWrite),
+        .Stall_o(Stall)
 );
 
 MUX_2to1 #(.size(10)) Mux_Control(
         .data0_i({RegDst, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg}), // control
         .data1_i(10'b0),
         .select_i(Stall),
-        .data_o(Control)
+        .data_o(ControlSignal)
 );
 
 Sign_Extend Sign_Extend(
@@ -152,8 +153,9 @@ Sign_Extend Sign_Extend(
 Pipe_Reg #(.size(148)) ID_EX(
         .rst_i(rst_n),
         .clk_i(clk_i),
+        .pipeRegWrite_i(1'b1),
                           // pc + 4,                         
-        .data_i({Control, AfterIF_ID[63:32], RSdata, RTdata,
+        .data_i({ControlSignal, AfterIF_ID[63:32], RSdata, RTdata,
              // contains RD,       RT,             RS
                 immediate, AfterIF_ID[20:16], AfterIF_ID[25:21]}),
         .data_o(AfterID_EX)
@@ -222,6 +224,7 @@ MUX_2to1 #(.size(5)) Mux_RegDst(
 Pipe_Reg #(.size(107)) EX_MEM(
         .rst_i(rst_n),
         .clk_i(clk_i),
+        .pipeRegWrite_i(1'b1),
                            // control, pc + 4
         .data_i({AfterID_EX[142:138], AfterID_EX[137:106], ALUZero, ALUResult,
                 // RTdata
@@ -242,6 +245,7 @@ Data_Memory DM(
 Pipe_Reg #(.size(71)) MEM_WB(
         .rst_i(rst_n),
         .clk_i(clk_i),
+        .pipeRegWrite_i(1'b1),
                  // control,                     ALUResult
         .data_i({AfterEX_MEM[103:102], ReadData, AfterEX_MEM[68:37],
                 // WriteReg
