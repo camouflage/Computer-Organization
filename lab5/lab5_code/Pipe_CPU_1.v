@@ -10,7 +10,7 @@
 //--------------------------------------------------------------------------------
 module Pipe_CPU_1(
         clk_i,
-	rst_n
+	    rst_n
 );
     
 /****************************************
@@ -174,6 +174,7 @@ MUX_3to1 #(.size(32)) Mux_ForwardA(
         .data2_i(AfterEX_MEM[68:37]), // MEM_ALUResult
         //.data3_i(),
         .select_i(ForwardA),
+        //.select_i(2'b00),
         .data_o(ALUSrc1)
 );
 
@@ -183,6 +184,7 @@ MUX_3to1 #(.size(32)) Mux_ForwardB(
         .data2_i(AfterEX_MEM[68:37]), // MEM_ALUResult
         //.data3_i(),
         .select_i(ForwardB),
+        //.select_i(2'b00),
         .data_o(ForwardBOut)
 );
 
@@ -195,7 +197,7 @@ MUX_2to1 #(.size(32)) Mux_ALUSrc(
 		
 MUX_2to1 #(.size(5)) Mux_RegDst(
         .data0_i(AfterID_EX[9:5]), // RT
-        .data1_i(AfterID_EX[41:37]), // RD
+        .data1_i(AfterID_EX[25:21]), // RD
         .select_i(AfterID_EX[147]), // RegDst
         .data_o(WriteReg)
 );
