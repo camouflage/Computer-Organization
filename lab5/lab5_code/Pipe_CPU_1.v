@@ -42,6 +42,10 @@ wire           MemRead;
 wire           MemWrite;
 wire           RegWrite;
 wire           MemtoReg;
+wire           PCWrite;
+wire           IF_IDWrite;
+wire           Stall;
+wire [10-1]    Control;
 
 
 /**** EX stage ****/
@@ -123,6 +127,23 @@ Decoder Control(
         .MemtoReg_o(MemtoReg)
 );
 
+Hazard_Dection_Unit Hazard_Dection_Unit(
+        .rs_i(),
+        .rt_i(),
+        .EX_Rt_i(),
+        .EX_MEMRead_i(),
+        .PCWrite_o(),
+        .IF_IDWrite_o(),
+        .Stall_o()
+);
+
+MUX_2to1 #(.size(10)) Mux_Control(
+        .data0_i({RegDst, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg}), // control
+        .data1_i(10'b0),
+        .select_i(Stall),
+        .data_o(Control)
+);
+
 Sign_Extend Sign_Extend(
         .data_i(AfterIF_ID[15:0]), // instr[15:0]
         .data_o(immediate)
@@ -131,12 +152,10 @@ Sign_Extend Sign_Extend(
 Pipe_Reg #(.size(148)) ID_EX(
         .rst_i(rst_n),
         .clk_i(clk_i),
-                 // control
-        .data_i({RegDst, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite,
-                          // pc + 4,                         contains RD
-                MemtoReg, AfterIF_ID[63:32], RSdata, RTdata, immediate,
-                // RT,             RS
-                AfterIF_ID[20:16], AfterIF_ID[25:21]}),
+                          // pc + 4,                         
+        .data_i({Control, AfterIF_ID[63:32], RSdata, RTdata,
+             // contains RD,       RT,             RS
+                immediate, AfterIF_ID[20:16], AfterIF_ID[25:21]}),
         .data_o(AfterID_EX)
 );
 		
@@ -174,7 +193,6 @@ MUX_3to1 #(.size(32)) Mux_ForwardA(
         .data2_i(AfterEX_MEM[68:37]), // MEM_ALUResult
         //.data3_i(),
         .select_i(ForwardA),
-        //.select_i(2'b00),
         .data_o(ALUSrc1)
 );
 
@@ -184,7 +202,6 @@ MUX_3to1 #(.size(32)) Mux_ForwardB(
         .data2_i(AfterEX_MEM[68:37]), // MEM_ALUResult
         //.data3_i(),
         .select_i(ForwardB),
-        //.select_i(2'b00),
         .data_o(ForwardBOut)
 );
 
