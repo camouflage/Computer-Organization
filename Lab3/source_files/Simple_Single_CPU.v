@@ -188,10 +188,10 @@ MUX_2to1 #(.size(32)) MUX_Jump (
 );
 */
 MUX_4to1 #(.size(1)) MUX_BranchType (
-        .data0_i(ALUZero),
-        .data1_i(!(ALUZero || ALUResult[31])),
-        .data2_i(!ALUResult[31]),
-        .data3_i(!ALUZero),
+        .data0_i(ALUZero), // beq
+        .data1_i(!(ALUZero || ALUResult[31])), // bgt
+        .data2_i(!ALUResult[31]), // bgez
+        .data3_i(!ALUZero), // bne
         .select_i(BranchType),
         .data_o(Branch2)
 );
