@@ -28,6 +28,8 @@ always @(posedge clk_i or negedge  rst_i) begin
 		data_o <= 0;
     else if ( pipeRegWrite_i )
     	data_o <= data_i;
+    //else
+    //	$display("%b", data_o);
 end
 
 endmodule	

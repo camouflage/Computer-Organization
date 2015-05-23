@@ -78,7 +78,8 @@ Instnatiate modules
 //Instantiate the components in IF stage
 ProgramCounter PC(
         .clk_i(clk_i),      
-	    .rst_i(rst_n),     
+	    .rst_i(rst_n),
+        .PCWrite_i(PCWrite),     
         .pc_in_i(pcOld),   
         .pc_out_o(pcNew) 
 );
