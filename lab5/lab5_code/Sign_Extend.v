@@ -10,17 +10,16 @@
 //--------------------------------------------------------------------------------
 
 module Sign_Extend(
-	//isOri_i,
+	zeroExtend_i,
     data_i,
     data_o
 );
 
-//parameter size = 1;
+parameter size = 1;
 
 //I/O ports
-//input	isOri_i;
-//input   [size-1:0] data_i;
-input   [16-1:0] data_i;
+input	zeroExtend_i;
+input   [size-1:0] data_i;
 output  [32-1:0] data_o;
 
 //Internal Signals
@@ -29,8 +28,7 @@ reg     [32-1:0] data_o;
 //Sign extended
 always @(data_i)
 begin
-	//if ( data_i[size - 1] == 0 || isOri_i )
-	if ( data_i[16 - 1] == 0 )
+	if ( data_i[size - 1] == 0 || zeroExtend_i )
 		data_o = data_i;
 	else
 		data_o = data_i | 32'b1111_1111_1111_1111_0000_0000_0000_0000;       

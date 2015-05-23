@@ -11,7 +11,8 @@
 module Pipe_Reg(
             rst_i,
 			clk_i,
-			pipeRegWrite_i,   
+			pipeRegWrite_i,
+			flush_i,
 			data_i,
 			data_o
 );
@@ -19,12 +20,13 @@ module Pipe_Reg(
 parameter size = 0;
 input                    rst_i;
 input                    clk_i;		
-input					 pipeRegWrite_i;  
-input      [size-1: 0] data_i;
-output reg [size-1: 0] data_o;
+input					 pipeRegWrite_i;
+input					 flush_i;
+input      [size-1: 0] 	 data_i;
+output reg [size-1: 0]   data_o;
 	  
 always @(posedge clk_i or negedge  rst_i) begin
-	if ( rst_i == 0 ) 
+	if ( rst_i == 0 || flush_i ) 
 		data_o <= 0;
     else if ( pipeRegWrite_i )
     	data_o <= data_i;
