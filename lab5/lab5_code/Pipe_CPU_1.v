@@ -48,6 +48,7 @@ wire           IF_IDWrite;
 wire           Stall;
 wire [10-1:0]  ControlSignal;
 wire [2-1:0]   BranchType;
+wire           ReadDataReg;
 
 
 /**** EX stage ****/
@@ -59,6 +60,8 @@ wire [5-1:0]   WriteReg;
 wire [148-1:0] AfterID_EX;
 wire [32-1:0]  ForwardBOut;
 wire [32-1:0]  pcAddIm;
+wire [32-1:0]  ReadData2;
+wire [32-1:0]  immediateSL2;
 //control signal
 wire [4-1:0]   ALUCtrl;
 wire [2-1:0]   ForwardA;
@@ -109,8 +112,8 @@ Pipe_Reg #(.size(64)) IF_ID(       // N is the total length of input/output
 
 MUX_2to1 #(.size(32)) Mux_PC_Source(
         .data0_i(pcAdd4),
-        .data1_i(pcADDIm),
-        .select_i(Branch && Branch2),
+        .data1_i(AfterEX_MEM[101:70]), // pcADDIm
+        .select_i(AfterEX_MEM[106] && Branch2), // Branch && Branch2
         .data_o(pcOld)
 );
 		
@@ -137,7 +140,8 @@ Decoder Control(
         .MemWrite_o(MemWrite),
         .RegWrite_o(RegWrite),
         .MemtoReg_o(MemtoReg),
-        .BranchType_o(BranchType)
+        .BranchType_o(BranchType),
+        .ReadDataReg_o(ReadDataReg)
 );
 
 Hazard_Dection_Unit Hazard_Dection_Unit(
@@ -150,9 +154,9 @@ Hazard_Dection_Unit Hazard_Dection_Unit(
         .Stall_o(Stall)
 );
 
-MUX_2to1 #(.size(12)) Mux_Control(
-        .data0_i({BranchType, RegDst, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg}), // control
-        .data1_i(12'b0),
+MUX_2to1 #(.size(13)) Mux_Control(
+        .data0_i({ReadDataReg, BranchType, RegDst, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg}), // control
+        .data1_i(13'b0),
         .select_i(Stall),
         .data_o(ControlSignal)
 );
@@ -162,7 +166,7 @@ Sign_Extend Sign_Extend(
         .data_o(immediate)
 );
 
-Pipe_Reg #(.size(150)) ID_EX(
+Pipe_Reg #(.size(151)) ID_EX(
         .rst_i(rst_n),
         .clk_i(clk_i),
         .pipeRegWrite_i(1'b1),
@@ -219,8 +223,16 @@ MUX_3to1 #(.size(32)) Mux_ForwardB(
         .data_o(ForwardBOut)
 );
 
+// For begz: rt field has const 1.
+MUX_2to1 #(.size(32)) MUX_ReadData2 (
+        .data0_i(ForwardBOut),
+        .data1_i(RTdata),
+        .select_i(ReadDataReg),
+        .data_o(ReadData2)
+);
+
 MUX_2to1 #(.size(32)) Mux_ALUSrc(
-	    .data0_i(ForwardBOut), // 
+	    .data0_i(ReadData2), // 
         .data1_i(AfterID_EX[41:10]), // immediate
         .select_i(AfterID_EX[143]), // ALUSrc
         .data_o(ALUSrc2)
@@ -231,6 +243,11 @@ MUX_2to1 #(.size(5)) Mux_RegDst(
         .data1_i(AfterID_EX[25:21]), // RD
         .select_i(AfterID_EX[147]), // RegDst
         .data_o(WriteReg)
+);
+
+Shift_Left_Two_32 Shifter(
+        .data_i(AfterID_EX[41:10]), // immediate
+        .data_o(immediateSL2)
 );
 
 Adder Add_PCIm(
@@ -259,13 +276,13 @@ Data_Memory DM(
         .MemWrite_i(AfterEX_MEM[104]), // MemWrite
         .data_o(ReadData)
 );
-// TO DO
+
 MUX_4to1 #(.size(1)) MUX_BranchType (
-        .data0_i(ALUZero),
-        .data1_i(!(ALUZero || ALUResult[31])),
-        .data2_i(!ALUResult[31]),
-        .data3_i(!ALUZero),
-        .select_i(BranchType),
+        .data0_i(AfterEX_MEM[69]), // ALUZero, for beq
+        .data1_i(!(AfterEX_MEM[69] || AfterEX_MEM[68])), // !(ALUZero || ALUResult[31]), for bgt
+        .data2_i(!AfterEX_MEM[68]), // !ALUResult[31], for bgez
+        .data3_i(!AfterEX_MEM[69]), // !ALUZer, for bne
+        .select_i(AfterEX_MEM[108:107]), // BranchType
         .data_o(Branch2)
 );
 

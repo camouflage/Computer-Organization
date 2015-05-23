@@ -86,9 +86,9 @@ begin
 			ALUCtrl_o =  4'b0001;
 
 		// extra in lab3
-		// bgez (mul)
+		// bgez (or)
 		3'b101:
-			ALUCtrl_o = 4'b0011;
+			ALUCtrl_o = 4'b0001;
 		// default
 		default:
 			ALUCtrl_o = 4'bxxxx;

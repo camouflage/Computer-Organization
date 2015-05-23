@@ -19,11 +19,11 @@ module Decoder(
 	MemRead_o,
 	MemWrite_o,
 	RegWrite_o,
-	MemtoReg_o
+	MemtoReg_o,
 	//isOri_o,
 	BranchType_o,
 	//Jump_o,
-	//ReadDataReg_o,
+	ReadDataReg_o,
 	//isJal_o,
 	//isJJr_o
 );
@@ -44,7 +44,7 @@ output [2-1:0] BranchType_o;
 output		   MemRead_o;
 output		   MemWrite_o;
 output         MemtoReg_o;
-//output		   ReadDataReg_o;
+output		   ReadDataReg_o;
 //output         isJal_o;
 //output [2-1:0] isJJr_o;
  
@@ -61,7 +61,7 @@ reg    [2-1:0] BranchType_o;
 reg   		   MemRead_o;
 reg            MemWrite_o;
 reg            MemtoReg_o;
-//reg  		   ReadDataReg_o;
+reg  		   ReadDataReg_o;
 //reg            isJal_o;
 //reg    [2-1:0] isJJr_o;
 //Parameter
@@ -86,7 +86,7 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 1;
-			//ReadDataReg_o = 1;
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b010; 
 			/*
 			if ( instr_funct_i == 6'b001000 ) begin
@@ -106,7 +106,7 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 1;
-			//ReadDataReg_o = 1;
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b110;
 		end
 		/*
@@ -196,7 +196,7 @@ begin
 			MemRead_o = 1;
 			MemWrite_o = 0;
 			MemtoReg_o = 0;
-			//ReadDataReg_o = 1;
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b110;
 		end
 		// sw
@@ -210,7 +210,7 @@ begin
 			MemRead_o = 0;
 			MemWrite_o = 1;
 			MemtoReg_o = 0; // don't care
-			//ReadDataReg_o = 1;
+			ReadDataReg_o = 1;
 			ALU_op_o = 3'b110;
 		end
 		/*
@@ -287,6 +287,7 @@ begin
 			MemtoReg_o = 1'b0;
 			ALU_op_o = 3'b000;
 			BranchType_o = 2'b00;
+			ReadDataReg_o = 0;
 		end
 	endcase
 
