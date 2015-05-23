@@ -23,7 +23,7 @@ module Decoder(
 	//isOri_o,
 	BranchType_o,
 	//Jump_o,
-	ReadDataReg_o,
+	ReadDataReg_o
 	//isJal_o,
 	//isJJr_o
 );

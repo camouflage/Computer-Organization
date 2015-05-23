@@ -42,7 +42,7 @@ always @(*) begin
 		PCWrite_o = 0;
 		IF_IDWrite_o = 0;
 		Stall_o = 1;
-		$display("stall!!");
+		//$display("stall!!");
 	end else begin
 		PCWrite_o = 1;
 		IF_IDWrite_o = 1;

@@ -46,7 +46,7 @@ wire           MemtoReg;
 wire           PCWrite;
 wire           IF_IDWrite;
 wire           Stall;
-wire [10-1:0]  ControlSignal;
+wire [13-1:0]  ControlSignal;
 wire [2-1:0]   BranchType;
 wire           ReadDataReg;
 
@@ -57,7 +57,7 @@ wire [32-1:0]  ALUSrc2;
 wire [32-1:0]  ALUResult;
 wire           ALUZero;
 wire [5-1:0]   WriteReg;
-wire [148-1:0] AfterID_EX;
+wire [151-1:0] AfterID_EX;
 wire [32-1:0]  ForwardBOut;
 wire [32-1:0]  pcAddIm;
 wire [32-1:0]  ReadData2;
@@ -69,7 +69,7 @@ wire [2-1:0]   ForwardB;
 
 /**** MEM stage ****/
 wire [32-1:0]  ReadData;
-wire [107-1:0] AfterEX_MEM;
+wire [109-1:0] AfterEX_MEM;
 
 
 /**** WB stage ****/
@@ -112,7 +112,7 @@ Pipe_Reg #(.size(64)) IF_ID(       // N is the total length of input/output
 
 MUX_2to1 #(.size(32)) Mux_PC_Source(
         .data0_i(pcAdd4),
-        .data1_i(AfterEX_MEM[101:70]), // pcADDIm
+        .data1_i(AfterEX_MEM[101:70]), // pcAddIm
         .select_i(AfterEX_MEM[106] && Branch2), // Branch && Branch2
         .data_o(pcOld)
 );
@@ -227,7 +227,7 @@ MUX_3to1 #(.size(32)) Mux_ForwardB(
 MUX_2to1 #(.size(32)) MUX_ReadData2 (
         .data0_i(ForwardBOut),
         .data1_i(RTdata),
-        .select_i(ReadDataReg),
+        .select_i(AfterID_EX[150]), // ReadDataReg
         .data_o(ReadData2)
 );
 
@@ -253,7 +253,7 @@ Shift_Left_Two_32 Shifter(
 Adder Add_PCIm(
         .src1_i(pcAdd4),     
         .src2_i(immediateSL2),
-        .sum_o(pcADDIm)     
+        .sum_o(pcAddIm)     
 );
 
 Pipe_Reg #(.size(109)) EX_MEM(
@@ -261,7 +261,7 @@ Pipe_Reg #(.size(109)) EX_MEM(
         .clk_i(clk_i),
         .pipeRegWrite_i(1'b1),
                  // control (BranchType)   
-        .data_i({AfterID_EX[149:148], AfterID_EX[142:138], pcADDIm, ALUZero, ALUResult,
+        .data_i({AfterID_EX[149:148], AfterID_EX[142:138], pcAddIm, ALUZero, ALUResult,
                 // RTdata
                 AfterID_EX[73:42], WriteReg}),
         .data_o(AfterEX_MEM)
