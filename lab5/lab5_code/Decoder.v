@@ -21,11 +21,10 @@ module Decoder(
 	RegWrite_o,
 	MemtoReg_o
 	//isOri_o,
-	//BranchType_o,
+	BranchType_o,
 	//Jump_o,
 	//ReadDataReg_o,
 	//isJal_o,
-	//isJr_o
 	//isJJr_o
 );
      
@@ -40,14 +39,13 @@ output         RegDst_o;
 output         Branch_o;
 //output		   isOri_o;
 
-//output [2-1:0] BranchType_o;
+output [2-1:0] BranchType_o;
 //output         Jump_o;
 output		   MemRead_o;
 output		   MemWrite_o;
 output         MemtoReg_o;
 //output		   ReadDataReg_o;
 //output         isJal_o;
-//output         isJr_o;
 //output [2-1:0] isJJr_o;
  
 //Internal Signals
@@ -58,14 +56,13 @@ reg            RegDst_o;
 reg            Branch_o;
 //reg 		   isOri_o;
 
-//reg    [2-1:0] BranchType_o;
+reg    [2-1:0] BranchType_o;
 //reg            Jump_o;
 reg   		   MemRead_o;
 reg            MemWrite_o;
 reg            MemtoReg_o;
 //reg  		   ReadDataReg_o;
 //reg            isJal_o;
-//reg            isJr_o;
 //reg    [2-1:0] isJJr_o;
 //Parameter
 
@@ -76,7 +73,6 @@ begin
 	//$display("%b", instr_op_i);
 	//isOri_o = 0;
 	//isJal_o = 0;
-	//isJr_o = 0;
 	//isJJr_o = 2'b00;
 	case(instr_op_i)
 		// R-type
@@ -85,7 +81,7 @@ begin
 			ALUSrc_o = 0;
 			RegWrite_o = 1;
 			Branch_o = 0;
-			//BranchType_o = 2'b00; // don't care
+			BranchType_o = 2'b00; // don't care
 			//Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
@@ -105,7 +101,7 @@ begin
 			ALUSrc_o = 1;
 			RegWrite_o = 1;
 			Branch_o = 0;
-			//BranchType_o = 2'b00; // don't care
+			BranchType_o = 2'b00; // don't care
 			//Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
@@ -128,6 +124,7 @@ begin
 			ReadDataReg_o = 1;
 			ALU_op_o = 3'b011;
 		end
+		*/
 		// beq
 		6'b000100: begin
 			RegDst_o = 0; // don't care
@@ -142,6 +139,7 @@ begin
 			ReadDataReg_o = 1;
 			ALU_op_o = 3'b001;
 		end
+		/*
 		// lui
 		6'b001111: begin
 			RegDst_o = 0;
@@ -171,6 +169,7 @@ begin
 			ALU_op_o = 3'b111;
 			isOri_o = 1;
 		end
+		*/
 		// bne
 		6'b000101: begin
 			RegDst_o = 0; // don't care
@@ -185,15 +184,14 @@ begin
 			ReadDataReg_o = 1;
 			ALU_op_o = 3'b001;
 		end
-		*/
-
+		
 		// lw
 		6'b100011: begin
 			RegDst_o = 0;
 			ALUSrc_o = 1;
 			RegWrite_o = 1;
 			Branch_o = 0;
-			//BranchType_o = 2'b00; // don't care
+			BranchType_o = 2'b00; // don't care
 			//Jump_o = 0;
 			MemRead_o = 1;
 			MemWrite_o = 0;
@@ -207,7 +205,7 @@ begin
 			ALUSrc_o = 1;
 			RegWrite_o = 0;
 			Branch_o = 0;
-			//BranchType_o = 2'b00; // don't care
+			BranchType_o = 2'b00; // don't care
 			//Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 1;
@@ -231,6 +229,7 @@ begin
 			ALU_op_o = 3'b010; // don't care
 			isJJr_o = 2'b10;
 		end
+		*/
 		// bgt
 		6'b000111: begin
 			RegDst_o = 0; // don't care
@@ -259,6 +258,7 @@ begin
 			ReadDataReg_o = 0; 
 			ALU_op_o = 3'b101;
 		end
+		/*
 		// jal
 		6'b000011: begin
 			RegDst_o = 0; // don't care
@@ -286,6 +286,7 @@ begin
 			RegWrite_o = 1'b0;
 			MemtoReg_o = 1'b0;
 			ALU_op_o = 3'b000;
+			BranchType_o = 2'b00;
 		end
 	endcase
 
