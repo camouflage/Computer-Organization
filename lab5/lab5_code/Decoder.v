@@ -214,7 +214,6 @@ begin
 			ReadDataReg_o = 1; // don't care
 			ALU_op_o = 3'b010; // don't care
 			isJJr_o = 2'b10;
-			$display("%b", isJJr_o != 2'b00);
 		end
 		// bgt
 		6'b000111: begin
