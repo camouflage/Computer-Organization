@@ -28,9 +28,12 @@ output  [size-1:0] data_o;
 reg     [size-1:0] data_o;
 
 //Main function
-always @(data0_i or data1_i or select_i)
-begin
-data_o = select_i? data1_i: data0_i;
+always @(data0_i or data1_i or select_i) begin
+	//data_o = select_i? data1_i: data0_i;
+	if ( select_i == 1 )
+		data_o = data1_i;
+	else
+		data_o = data0_i;
 end
 
 endmodule      
