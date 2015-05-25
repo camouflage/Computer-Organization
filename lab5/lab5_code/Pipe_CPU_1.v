@@ -118,7 +118,7 @@ MUX_2to1 #(.size(32)) Mux_PC_Source(
 
 MUX_4to1 #(.size(32)) MUX_JJr (
         .data0_i(pcBeforeJump),
-        .data1_i(AfterID_EX[105:74]), // RSdata
+        .data1_i(ALUSrc1), // RSdata
         // pcAdd4[31:28], instr[25:0]
         .data2_i({AfterID_EX[137:134],
                   AfterID_EX[4:0], AfterID_EX[9:5], AfterID_EX[25:10],
