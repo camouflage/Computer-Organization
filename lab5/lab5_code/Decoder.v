@@ -222,7 +222,6 @@ begin
 			RegWrite_o = 0;
 			Branch_o = 1;
 			BranchType_o = 2'b01;
-			//Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
@@ -236,7 +235,6 @@ begin
 			RegWrite_o = 0;
 			Branch_o = 1;
 			BranchType_o = 2'b10;
-			//Jump_o = 0;
 			MemRead_o = 0;
 			MemWrite_o = 0;
 			MemtoReg_o = 2'b00; // don't care
@@ -250,7 +248,6 @@ begin
 			RegWrite_o = 1;
 			Branch_o = 0; // don't care
 			BranchType_o = 2'b00; // don't care
-			//Jump_o = 1;
 			MemRead_o = 0; // don't care
 			MemWrite_o = 0; // don't care
 			MemtoReg_o = 2'b11;

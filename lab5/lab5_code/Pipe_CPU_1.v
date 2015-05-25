@@ -48,7 +48,7 @@ wire           MemtoReg;
 wire           PCWrite;
 wire           IF_IDWrite;
 wire           Stall;
-wire [15-1:0]  IDControl;
+wire [16-1:0]  IDControl;
 wire [2-1:0]   BranchType;
 wire           ReadDataReg;
 wire           IsJal;
@@ -61,7 +61,7 @@ wire [32-1:0]  ALUSrc2;
 wire [32-1:0]  ALUResult;
 wire           ALUZero;
 wire [5-1:0]   WriteReg;
-wire [153-1:0] AfterID_EX;
+wire [154-1:0] AfterID_EX;
 wire [32-1:0]  ForwardBOut;
 wire [32-1:0]  pcAddIm;
 wire [32-1:0]  ReadData2;
@@ -71,16 +71,18 @@ wire [32-1:0]  RTimmediate;
 wire [4-1:0]   ALUCtrl;
 wire [2-1:0]   ForwardA;
 wire [2-1:0]   ForwardB;
-wire [7-1:0]   EXControl;
+wire [8-1:0]   EXControl;
 
 /**** MEM stage ****/
 wire [32-1:0]  ReadData;
-wire [109-1:0] AfterEX_MEM;
+wire [142-1:0] AfterEX_MEM;
+wire [5-1:0]   WriteRegAfterJal;
 
 
 /**** WB stage ****/
-wire [32-1:0]  WriteDataReg;
-wire [71-1:0]  AfterMEM_WB;
+wire [32-1:0]  WriteRegData;
+wire [32-1:0]  WriteRegDataAfterJal;
+wire [104-1:0]  AfterMEM_WB;
 //control signal
 
 
@@ -138,7 +140,7 @@ Pipe_Reg #(.size(64)) IF_ID(       // N is the total length of input/output
         .rst_i(rst_n), // IF_Flush
         .clk_i(clk_i),
         .pipeRegWrite_i(IF_IDWrite), // lw-use hazard
-                 // pc + 4
+                 // pcAdd4
         .data_i({pcAdd4, instrAfterFlush}),
         .data_o(AfterIF_ID)
 );
@@ -150,7 +152,7 @@ Reg_File RF(
         .RSaddr_i(AfterIF_ID[25:21]),  // instr[25:21]
         .RTaddr_i(AfterIF_ID[20:16]),  // instr[20:16]
         .RDaddr_i(AfterMEM_WB[4:0]),
-        .RDdata_i(WriteDataReg),
+        .RDdata_i(WriteRegDataAfterJal),
         .RegWrite_i(AfterMEM_WB[70]), // RegWrite
         .RSdata_o(RSdata),
         .RTdata_o(RTdata) 
@@ -183,9 +185,9 @@ Hazard_Dection_Unit Hazard_Dection_Unit(
         .Stall_o(Stall)
 );
 
-MUX_2to1 #(.size(15)) Mux_IDControl(
-        .data0_i({IsJJr, ReadDataReg, BranchType, RegDst, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg}), // control
-        .data1_i(15'd0),
+MUX_2to1 #(.size(16)) Mux_IDControl(
+        .data0_i({IsJal, IsJJr, ReadDataReg, BranchType, RegDst, ALUOp, ALUSrc, Branch, MemRead, MemWrite, RegWrite, MemtoReg}), // control
+        .data1_i(16'd0),
         // lw-use hazard or control hazard
         .select_i(Stall || (AfterEX_MEM[106] && Branch2) ||
                   // isJJr
@@ -199,11 +201,11 @@ Sign_Extend #(.size(16)) Sign_Extend(
         .data_o(immediate)
 );
 
-Pipe_Reg #(.size(153)) ID_EX(
+Pipe_Reg #(.size(154)) ID_EX(
         .rst_i(rst_n),
         .clk_i(clk_i),
         .pipeRegWrite_i(1'b1),
-                            // pc + 4,                         
+                            // pcAdd4,                         
         .data_i({IDControl, AfterIF_ID[63:32], RSdata, RTdata,
              // contains RD,       RT,             RS
                 immediate, AfterIF_ID[20:16], AfterIF_ID[25:21]}),
@@ -240,7 +242,7 @@ Forwarding_Unit Forwarding_Unit(
 
 MUX_4to1 #(.size(32)) Mux_ForwardA(
         .data0_i(AfterID_EX[105:74]), // RSdata
-        .data1_i(WriteDataReg), // WB_ALUResult
+        .data1_i(WriteRegDataAfterJal), // WB_ALUResult
         .data2_i(AfterEX_MEM[68:37]), // MEM_ALUResult
         .data3_i(),
         .select_i(ForwardA),
@@ -249,7 +251,7 @@ MUX_4to1 #(.size(32)) Mux_ForwardA(
 
 MUX_4to1 #(.size(32)) Mux_ForwardB(
         .data0_i(AfterID_EX[73:42]), // RTdata
-        .data1_i(WriteDataReg), // WB_ALUResult
+        .data1_i(WriteRegDataAfterJal), // WB_ALUResult
         .data2_i(AfterEX_MEM[68:37]), // MEM_ALUResult
         .data3_i(),
         .select_i(ForwardB),
@@ -295,19 +297,20 @@ Adder Add_PCIm(
         .sum_o(pcAddIm)     
 );
 
-MUX_2to1 #(.size(7)) Mux_EXControl(
-                 // control (BranchType)   
-        .data0_i({AfterID_EX[149:148], AfterID_EX[142:138]}),
-        .data1_i(7'd0),
+MUX_2to1 #(.size(8)) Mux_EXControl(
+               // control: isJal,      BranchType   
+        .data0_i({AfterID_EX[153], AfterID_EX[149:148], AfterID_EX[142:138]}),
+        .data1_i(8'd0),
         .select_i(AfterEX_MEM[106] && Branch2), // EX_Flush
         .data_o(EXControl)
 );
 
-Pipe_Reg #(.size(109)) EX_MEM(
+Pipe_Reg #(.size(142)) EX_MEM(
         .rst_i(rst_n),
         .clk_i(clk_i),
         .pipeRegWrite_i(1'b1),
-        .data_i({EXControl, pcAddIm, ALUZero, ALUResult,
+              // pcAdd4
+        .data_i({AfterID_EX[137:106], EXControl, pcAddIm, ALUZero, ALUResult,
                 // RTdata
                 AfterID_EX[73:42], WriteReg}),
         .data_o(AfterEX_MEM)
@@ -332,14 +335,21 @@ MUX_4to1 #(.size(1)) MUX_BranchType (
         .data_o(Branch2)
 );
 
-Pipe_Reg #(.size(71)) MEM_WB(
+MUX_2to1 #(.size(5)) Mux_RegDstAfterJal(
+        .data0_i(AfterEX_MEM[4:0]), // RT or RD
+        .data1_i(5'b11111), // $r31
+        .select_i(AfterEX_MEM[109]), // RegDst
+        .data_o(WriteRegAfterJal)
+);
+
+Pipe_Reg #(.size(104)) MEM_WB(
         .rst_i(rst_n),
         .clk_i(clk_i),
         .pipeRegWrite_i(1'b1),
-                 // control,                     ALUResult
-        .data_i({AfterEX_MEM[103:102], ReadData, AfterEX_MEM[68:37],
-                // WriteReg
-                AfterEX_MEM[4:0]}),
+              // pcAdd4,               control: isJal                     
+        .data_i({AfterEX_MEM[141:110], AfterEX_MEM[109], AfterEX_MEM[103:102], 
+                       // ALUResult
+                ReadData, AfterEX_MEM[68:37], WriteRegAfterJal}),
         .data_o(AfterMEM_WB)
 );
 
@@ -348,7 +358,14 @@ MUX_2to1 #(.size(32)) Mux_MemToReg(
         .data0_i(AfterMEM_WB[68:37]), // ReadData
         .data1_i(AfterMEM_WB[36:5]), // ALUResult
         .select_i(AfterMEM_WB[69]), // MemtoReg
-        .data_o(WriteDataReg)
+        .data_o(WriteRegData)
+);
+
+MUX_2to1 #(.size(32)) Mux_MemToRegAfterJal(
+        .data0_i(WriteRegData),
+        .data1_i(AfterMEM_WB[103:72]), // pcAdd4
+        .select_i(AfterMEM_WB[71]), // isJal
+        .data_o(WriteRegDataAfterJal)
 );
 
 /****************************************
