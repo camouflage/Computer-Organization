@@ -240,6 +240,7 @@ begin
 			MemtoReg_o = 2'b00; // don't care
 			ReadDataReg_o = 0; 
 			ALU_op_o = 3'b101;
+			$display("bgez");
 		end
 		// jal
 		6'b000011: begin

@@ -31,7 +31,7 @@ begin
 	if ( data_i[size - 1] == 0 || zeroExtend_i )
 		data_o = data_i;
 	else
-		data_o = data_i | 32'b1111_1111_1111_1111_0000_0000_0000_0000;       
+		data_o = data_i | 32'b1111_1111_1111_1111_0000_0000_0000_0000;   
 end
 endmodule
 

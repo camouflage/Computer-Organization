@@ -27,7 +27,6 @@ wire   [32-1:0]	 sum_o;
     
 //Main function
 assign sum_o = $signed(src1_i) + $signed(src2_i);
-
 endmodule
 
 /*

@@ -330,7 +330,7 @@ MUX_4to1 #(.size(1)) MUX_BranchType (
         .data0_i(AfterEX_MEM[69]), // ALUZero, for beq
         .data1_i(!(AfterEX_MEM[69] || AfterEX_MEM[68])), // !(ALUZero || ALUResult[31]), for bgt
         .data2_i(!AfterEX_MEM[68]), // !ALUResult[31], for bgez
-        .data3_i(!AfterEX_MEM[69]), // !ALUZer, for bne
+        .data3_i(!AfterEX_MEM[69]), // !ALUZero, for bne
         .select_i(AfterEX_MEM[108:107]), // BranchType
         .data_o(Branch2)
 );
