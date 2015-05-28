@@ -264,7 +264,7 @@ Sign_Extend #(.size(5)) SE_RTimm (
         .data_o(RTimmediate)
 );
 
-// For begz: rt field has const 1.
+// For bgez: rt field has const 1.
 MUX_2to1 #(.size(32)) MUX_ReadData2 (
         .data0_i(RTimmediate),
         .data1_i(ForwardBOut), // Register data

@@ -34,8 +34,9 @@ always @(data0_i or data1_i or data2_i or select_i)
 begin
 	//$display("%b %b %b %b", data0_i, data1_i, data2_i, select_i);
 	case (select_i)
-		2'b00:
+		2'b00: begin
 			data_o = data0_i;
+		end
 		2'b01: begin
 			data_o = data1_i;
 		end
