@@ -312,7 +312,7 @@ Pipe_Reg #(.size(142)) EX_MEM(
               // pcAdd4
         .data_i({AfterID_EX[137:106], EXControl, pcAddIm, ALUZero, ALUResult,
                 // RTdata
-                AfterID_EX[73:42], WriteReg}),
+                ForwardBOut, WriteReg}),
         .data_o(AfterEX_MEM)
 );
 	   
