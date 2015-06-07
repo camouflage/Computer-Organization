@@ -79,9 +79,11 @@ assign  memory[30] = {Mem[123], Mem[122], Mem[121], Mem[120]};
 assign  memory[31] = {Mem[127], Mem[126], Mem[125], Mem[124]};
 
 initial begin
-	for(i=0; i<128; i=i+1)
-		//Mem[i] = 8'b0;
-		/*initial your data memory here*/
+	for(i=0; i<128; i=i+1) begin
+		Mem[i] = 8'b0;
+	end
+	Mem[0] = 8'b0000_0001;
+	Mem[4] = 8'b0000_0011;
 
 end 
 
