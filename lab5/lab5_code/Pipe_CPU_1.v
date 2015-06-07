@@ -137,7 +137,7 @@ MUX_2to1 #(.size(32)) Mux_Instr(
 );
 
 Pipe_Reg #(.size(64)) IF_ID(       // N is the total length of input/output
-        .rst_i(rst_n), // IF_Flush
+        .rst_i(rst_n),
         .clk_i(clk_i),
         .pipeRegWrite_i(IF_IDWrite), // lw-use hazard
                  // pcAdd4
