@@ -1,4 +1,4 @@
-//Subject:     CO project 4 - Test Bench
+//Subject:     CO project 6 - Test Bench
 //--------------------------------------------------------------------------------
 //Version:     1
 //--------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ Pipe_CPU_1 cpu(
 always #(`CYCLE_TIME/2) CLK = ~CLK;	
 
 initial  begin
-$readmemb("CO_P4_test1.txt", cpu.IM.instruction_file);
+$readmemb("CO_P5_test1.txt", cpu.IM.instruction_file);
     
 	CLK = 0;
 	RST = 0;

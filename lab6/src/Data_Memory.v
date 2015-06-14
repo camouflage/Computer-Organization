@@ -44,7 +44,7 @@ reg		[7:0]		Mem 			[0:127];	// address: 0x00~0x80
 integer				i;
 
 // For Testbench to debug
-wire	[31:0]		memory			[0:31];
+wire signed	[31:0]		memory 			[0:31];
 assign  memory[0] = {Mem[3], Mem[2], Mem[1], Mem[0]};
 assign  memory[1] = {Mem[7], Mem[6], Mem[5], Mem[4]};
 assign  memory[2] = {Mem[11], Mem[10], Mem[9], Mem[8]};
@@ -79,12 +79,36 @@ assign  memory[30] = {Mem[123], Mem[122], Mem[121], Mem[120]};
 assign  memory[31] = {Mem[127], Mem[126], Mem[125], Mem[124]};
 
 initial begin
-	for(i=0; i<128; i=i+1) begin
+	for ( i=0; i<128; i=i+1 ) begin
 		Mem[i] = 8'b0;
 	end
-	Mem[0] = 8'b0000_0001;
-	Mem[4] = 8'b0000_0011;
-
+	Mem[0] = 8'b0000_0001; // mem[0]
+	Mem[4] = 8'b0000_0011; // mem[1]
+	Mem[8] = 8'b1001_1100;
+	Mem[9] = 8'b1111_1111;
+	Mem[10] = 8'b1111_1111;
+	Mem[11] = 8'b1111_1111;	// mem[2]
+	Mem[12] = 8'b0000_0010; // mem[3]
+	Mem[16] = 8'b1111_1110;
+	Mem[17] = 8'b1111_1111;
+	Mem[18] = 8'b1111_1111;
+	Mem[19] = 8'b1111_1111;	// mem[4]
+	Mem[20] = 8'b0000_1010; // mem[5]
+	Mem[24] = 8'b0000_0011; // mem[6]
+	Mem[28] = 8'b0000_0001; // mem[7]
+	Mem[32] = 8'b0000_0000; // mem[8]
+	Mem[36] = 8'b0000_0011; // mem[9]
+	Mem[40] = 8'b0000_0100; // mem[10]
+	Mem[44] = 8'b1111_1110;
+	Mem[45] = 8'b1111_1111;
+	Mem[46] = 8'b1111_1111;
+	Mem[47] = 8'b1111_1111;	// mem[11]
+	Mem[48] = 8'b0000_0101; // mem[12]
+	Mem[52] = 8'b1111_1111;
+	Mem[53] = 8'b1111_1111;
+	Mem[54] = 8'b1111_1111;
+	Mem[55] = 8'b1111_1111;	// mem[13]
+	Mem[56] = 8'b0000_0110; // mem[14]
 end 
 
 always@(posedge clk_i) begin

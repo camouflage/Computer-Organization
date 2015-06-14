@@ -37,7 +37,7 @@ initial begin
     for ( i=0; i<32; i=i+1 )
             instruction_file[i] = 32'b0;
         
-    $readmemb("CO_P4_test1.txt", instruction_file);  //Read instruction from "CO_P5_test1.txt"   
+    $readmemb("CO_P4_test5.txt", instruction_file);  //Read instruction from "CO_P5_test1.txt"   
 end
 
 assign	instr_o = instruction_file[addr_i/4];  
