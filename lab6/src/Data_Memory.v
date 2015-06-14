@@ -30,10 +30,10 @@ module Data_Memory
 
 // Interface
 input				clk_i;
-input	[31:0]		addr_i;
-input	[31:0]		data_i;
-input				MemRead_i;
-input				MemWrite_i;
+input	[63:0]		addr_i;
+input	[63:0]		data_i;
+input	[1:0]		MemRead_i;
+input	[1:0]		MemWrite_i;
 output	[31:0] 		data_o;
 
 // Signals
@@ -112,17 +112,26 @@ initial begin
 end 
 
 always@(posedge clk_i) begin
-    if(MemWrite_i) begin
+    if (MemWrite_i == 2'b01) begin
 		Mem[addr_i+3] <= data_i[31:24];
 		Mem[addr_i+2] <= data_i[23:16];
 		Mem[addr_i+1] <= data_i[15:8];
 		Mem[addr_i]   <= data_i[7:0];
 	end
+
+	if (MemWrite_i == 2'b10) begin
+		Mem[addr_i+3] <= data_i[63:56];
+		Mem[addr_i+2] <= data_i[55:28];
+		Mem[addr_i+1] <= data_i[47:40];
+		Mem[addr_i]   <= data_i[39:32];
+	end
 end
 
 always@(addr_i or MemRead_i) begin
-	if(MemRead_i)
-		data_o = {Mem[addr_i+3], Mem[addr_i+2], Mem[addr_i+1], Mem[addr_i]};
+	if (MemRead_i == 2'b01)
+		data_o = {Mem[addr_i[31:0]+3], Mem[addr_i[31:0]+2], Mem[addr_i[31:0]+1], Mem[addr_i[31:0]]};
+	if (MemRead_i == 2'b10)
+		data_o = {Mem[addr_i[63:32]+3], Mem[addr_i[63:32]+2], Mem[addr_i[63:32]+1], Mem[addr_i[63:32]]};
 end
 
 endmodule
