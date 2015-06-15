@@ -8,7 +8,7 @@
 //----------------------------------------------
 //Description: 
 //--------------------------------------------------------------------------------
-module Pipe_CPU_1(
+module Pipe_CPU_2(
         clk_i,
 	    rst_n
 );
@@ -123,7 +123,7 @@ MUX_4to1 #(.size(32)) MUX_JJr (
 );
 
 MUX_2to1 #(.size(32)) Mux_Instr(
-        .data0_i(instr),
+        .data0_i(TestBench.instr2),
         .data1_i(32'd0),
         // flush on control hazard or jump,        isJJr
         .select_i((AfterEX_MEM[106] && Branch2) || AfterID_EX[152:151] != 2'b00),

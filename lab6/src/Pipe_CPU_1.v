@@ -74,7 +74,6 @@ wire [2-1:0]   ForwardB;
 wire [8-1:0]   EXControl;
 
 /**** MEM stage ****/
-wire [32-1:0]  ReadData;
 wire [142-1:0] AfterEX_MEM;
 wire [5-1:0]   WriteRegAfterJal;
 
@@ -98,11 +97,6 @@ ProgramCounter PC(
         .pc_out_o(pcNew) 
 );
 
-Instruction_Memory IM(
-        .addr_i(pcNew),  
-	    .instr_o(instr)
-);
-			
 Adder Add_PC4(
         .src1_i(pcNew),     
 	    .src2_i(32'd4),     
@@ -129,7 +123,7 @@ MUX_4to1 #(.size(32)) MUX_JJr (
 );
 
 MUX_2to1 #(.size(32)) Mux_Instr(
-        .data0_i(instr),
+        .data0_i(TestBench.instr),
         .data1_i(32'd0),
         // flush on control hazard or jump,        isJJr
         .select_i((AfterEX_MEM[106] && Branch2) || AfterID_EX[152:151] != 2'b00),
@@ -317,14 +311,7 @@ Pipe_Reg #(.size(142)) EX_MEM(
 );
 	   
 //Instantiate the components in MEM stage
-Data_Memory DM(
-        .clk_i(clk_i),
-        .addr_i(AfterEX_MEM[68:37]), // ALUResult
-        .data_i(AfterEX_MEM[36:5]), // RTdata
-        .MemRead_i(AfterEX_MEM[105]), // MemRead
-        .MemWrite_i(AfterEX_MEM[104]), // MemWrite
-        .data_o(ReadData)
-);
+// Data_Memory is moved to TESTBENCH.v
 
 MUX_4to1 #(.size(1)) MUX_BranchType (
         .data0_i(AfterEX_MEM[69]), // ALUZero, for beq
@@ -349,7 +336,7 @@ Pipe_Reg #(.size(104)) MEM_WB(
               // pcAdd4,               control: isJal                     
         .data_i({AfterEX_MEM[141:110], AfterEX_MEM[109], AfterEX_MEM[103:102], 
                        // ALUResult
-                ReadData, AfterEX_MEM[68:37], WriteRegAfterJal}),
+                TestBench.ReadData, AfterEX_MEM[68:37], WriteRegAfterJal}),
         .data_o(AfterMEM_WB)
 );
 

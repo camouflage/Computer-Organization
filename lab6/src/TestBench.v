@@ -29,7 +29,7 @@ Pipe_CPU_1 cpu (
 	    .rst_n(RST)
 );
 
-Pipe_CPU_1 cpu2 (
+Pipe_CPU_2 cpu2 (
         .clk_i(CLK),
 	    .rst_n(RST)
 );
