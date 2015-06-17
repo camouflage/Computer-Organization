@@ -113,17 +113,18 @@ end
 
 always@(posedge clk_i) begin
     if (MemWrite_i == 2'b01) begin
-		Mem[addr_i+3] <= data_i[31:24];
-		Mem[addr_i+2] <= data_i[23:16];
-		Mem[addr_i+1] <= data_i[15:8];
-		Mem[addr_i]   <= data_i[7:0];
+		Mem[addr_i[31:0]+3] <= data_i[31:24];
+		Mem[addr_i[31:0]+2] <= data_i[23:16];
+		Mem[addr_i[31:0]+1] <= data_i[15:8];
+		Mem[addr_i[31:0]]   <= data_i[7:0];
 	end
 
 	if (MemWrite_i == 2'b10) begin
-		Mem[addr_i+3] <= data_i[63:56];
-		Mem[addr_i+2] <= data_i[55:28];
-		Mem[addr_i+1] <= data_i[47:40];
-		Mem[addr_i]   <= data_i[39:32];
+		$display("%b %b%b%b%b", addr_i[63:32], data_i[63:56], data_i[55:48], data_i[47:40], data_i[39:32]);
+		Mem[addr_i[63:32]+3] <= data_i[63:56];
+		Mem[addr_i[63:32]+2] <= data_i[55:48];
+		Mem[addr_i[63:32]+1] <= data_i[47:40];
+		Mem[addr_i[63:32]]   <= data_i[39:32];
 	end
 end
 

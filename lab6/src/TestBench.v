@@ -35,11 +35,11 @@ Pipe_CPU_2 cpu2 (
 );
 
 Data_Memory DM(
-        .clk_i(clk_i),
+        .clk_i(CLK),
         .addr_i({cpu.AfterEX_MEM[68:37], cpu2.AfterEX_MEM[68:37]}), // ALUResult
         .data_i({cpu.AfterEX_MEM[36:5], cpu2.AfterEX_MEM[36:5]}), // RTdata
         .MemRead_i({cpu.AfterEX_MEM[105], cpu2.AfterEX_MEM[105]}), // MemRead
-        .MemWrite_i({cpu.AfterEX_MEM[104], cpu.AfterEX_MEM[104]}), // MemWrite
+        .MemWrite_i({cpu.AfterEX_MEM[104], cpu2.AfterEX_MEM[104]}), // MemWrite
         .data_o(ReadData)
 );
 

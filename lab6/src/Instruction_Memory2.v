@@ -37,7 +37,7 @@ initial begin
     for ( i=0; i<32; i=i+1 )
             instruction_file[i] = 32'b0;
         
-    $readmemb("LAB6_machine_2.txt", cpu2.IM.instruction_file);
+    $readmemb("LAB6_machine_2.txt", instruction_file);
 end
 
 assign	instr_o = instruction_file[addr_i/4];  
