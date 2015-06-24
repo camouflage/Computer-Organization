@@ -30,11 +30,11 @@ output[31:0]		instr_o;
 integer          i;
 
 // Instruction File
-reg		[31:0]		instruction_file	[0:31];
+reg		[31:0]		instruction_file	[0:63];
 
 initial begin
 
-    for ( i=0; i<32; i=i+1 )
+    for ( i=0; i<64; i=i+1 )
             instruction_file[i] = 32'b0;
         
     $readmemb("LAB6_machine_2.txt", instruction_file);
